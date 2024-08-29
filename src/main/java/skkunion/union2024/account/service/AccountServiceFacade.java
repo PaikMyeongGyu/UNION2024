@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.emailVerification.domain.EmailVerification;
 import skkunion.union2024.emailVerification.domain.service.EmailVerificationService;
+import skkunion.union2024.global.exception.EmailVerificationExpiredException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.service.MemberService;
 
@@ -36,21 +37,19 @@ public class AccountServiceFacade {
         memberService.joinMember(new Member(nickname, email, password));
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
-        emailVerificationService.createTemporaryEmailAuth(email, token);
         emailVerificationService.sendEmailVerificationMessage(email, token);
+        emailVerificationService.createTemporaryEmailAuth(email, token);
     }
 
     @Transactional
-    public boolean emailVerificationIsSuccess(String token) {
+    public void tryEmailVerification(String token) {
         var findEmailVerification = emailVerificationService.findEmailVerificationByToken(token);
         if (findEmailVerification == null)
-            return false;
+            throw new EntityNotFoundException("존재하는 인증정보가 없습니다.");
 
         if (findEmailVerification.isExpired(now()))
-            return false;
+            throw new EmailVerificationExpiredException(token);
 
-        String email = findEmailVerification.getEmail();
-        memberService.activateMember(email);
-        return true;
+        memberService.activateMember(findEmailVerification.getEmail());
     }
 }
