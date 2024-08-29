@@ -36,6 +36,12 @@ dependencies {
     // 롬복 설정
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    // Apache commons 설정
+    implementation 'org.apache.commons:commons-lang3:3.0'
+    // Java Mail Sender 설정
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // 검증 설정
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // MySQL 관련 설정
     runtimeOnly 'com.mysql:mysql-connector-j'

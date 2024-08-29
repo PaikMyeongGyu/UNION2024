@@ -26,6 +26,8 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### 이메일 관련 정보 ###
+/src/main/java/skkunion/union2024/emailVerification/domain/config/EmailConfig.java
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
