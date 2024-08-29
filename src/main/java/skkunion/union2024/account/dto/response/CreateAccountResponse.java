@@ -1,7 +1,7 @@
 package skkunion.union2024.account.dto.response;
 
 
-public record createAccountResponse (
+public record CreateAccountResponse(
     String nickname,
     String email) {
 }
