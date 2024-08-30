@@ -29,7 +29,6 @@ public class AccountServiceFacade {
     private final EmailVerificationService emailVerificationService;
     private final MemberService memberService;
 
-    @Transactional
     public void createAccountWithEmailVerification(String nickname, String email, String password) {
         if (memberService.isMemberExist(email))
             throw new EntityExistsException(email);
