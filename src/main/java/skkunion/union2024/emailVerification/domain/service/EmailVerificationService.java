@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.emailVerification.domain.EmailVerification;
@@ -18,7 +19,6 @@ import static skkunion.union2024.emailVerification.domain.config.EmailConfig.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class EmailVerificationService {
     public static final int EXPIRED_MINUTE = 10;
     public static final int TOKEN_LENGTH = 10;
@@ -26,6 +26,7 @@ public class EmailVerificationService {
     private final EmailVerificationRepository emailAuthRepository;
     private final JavaMailSender mailSender;
 
+    @Transactional
     public void createTemporaryEmailAuth(String email, String token, LocalDateTime expiredTime) {
         if (isAlreadyExists(email)) {
             updateTemporaryEmailAuth(email, expiredTime);
@@ -35,11 +36,13 @@ public class EmailVerificationService {
         createNewTemporaryEmailAuth(email, token, expiredTime);
     }
 
+    @Transactional
     public void createTemporaryEmailAuth(String email, String token) {
         LocalDateTime expiredTime = LocalDateTime.now().plusMinutes(EXPIRED_MINUTE);
         createTemporaryEmailAuth(email, token, expiredTime);
     }
 
+    @Async("emailExecutor")
     public void sendEmailVerificationMessage(String toEmail, String token) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(EMAIL_ID);
@@ -49,6 +52,7 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
+    @Transactional
     public void deleteEmailAuth(String email) {
         if (isAlreadyExists(email)) {
             emailAuthRepository.deleteByEmail(email);
