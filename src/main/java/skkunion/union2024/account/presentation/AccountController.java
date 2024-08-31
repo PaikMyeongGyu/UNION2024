@@ -17,7 +17,7 @@ public class AccountController {
 
     public final AccountServiceFacade accountServiceFacade;
 
-    @PostMapping("/account")
+    @PostMapping("/accounts")
     public ResponseEntity<CreateAccountResponse> createAccount(
             @RequestBody final CreateAccountRequest accountRequest
     ) {
@@ -29,7 +29,7 @@ public class AccountController {
         return ResponseEntity.status(CREATED).body(new CreateAccountResponse(nickname, email));
     }
 
-    @GetMapping("/account/{verificationToken}")
+    @GetMapping("/accounts/{verificationToken}")
     public ResponseEntity<Void> verifyAccount(
             @PathVariable final String verificationToken
     ) {
