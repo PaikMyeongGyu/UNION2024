@@ -8,11 +8,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.emailVerification.domain.EmailVerification;
-import skkunion.union2024.emailVerification.domain.config.EmailConfig;
 import skkunion.union2024.emailVerification.domain.repository.EmailVerificationRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static skkunion.union2024.emailVerification.domain.config.EmailConfig.*;
@@ -29,7 +27,7 @@ public class EmailVerificationService {
     @Transactional
     public void createTemporaryEmailAuth(String email, String token, LocalDateTime expiredTime) {
         if (isAlreadyExists(email)) {
-            updateTemporaryEmailAuth(email, expiredTime);
+            refreshTemporaryEmailAuth(email, expiredTime);
             return;
         }
 
@@ -71,7 +69,7 @@ public class EmailVerificationService {
         emailAuthRepository.save(emailAuth);
     }
 
-    private void updateTemporaryEmailAuth(String email, LocalDateTime expiredTime) {
+    private void refreshTemporaryEmailAuth(String email, LocalDateTime expiredTime) {
         String token = randomAlphanumeric(TOKEN_LENGTH);
         emailAuthRepository.refreshEmailVerificationToken(email, token, expiredTime);
     }
