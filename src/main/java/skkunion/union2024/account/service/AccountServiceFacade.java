@@ -4,22 +4,18 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import skkunion.union2024.emailVerification.domain.EmailVerification;
 import skkunion.union2024.emailVerification.domain.service.EmailVerificationService;
-import skkunion.union2024.global.exception.EmailVerificationExpiredException;
+import skkunion.union2024.global.exception.EmailVerificationException;
+import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.service.MemberService;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static java.time.LocalDateTime.*;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static skkunion.union2024.emailVerification.domain.service.EmailVerificationService.TOKEN_LENGTH;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 
 @Slf4j
 @Service
@@ -44,10 +40,10 @@ public class AccountServiceFacade {
     public void tryEmailVerification(String token) {
         var findEmailVerification = emailVerificationService.findEmailVerificationByToken(token);
         if (findEmailVerification == null)
-            throw new EntityNotFoundException("존재하는 인증정보가 없습니다.");
+            throw new EmailVerificationException(EMAIL_VERIFICATION_NOT_FOUND);
 
         if (findEmailVerification.isExpired(now()))
-            throw new EmailVerificationExpiredException(token);
+            throw new EmailVerificationException(EMAIL_VERIFICATION_EXPIRED);
 
         memberService.activateMember(findEmailVerification.getEmail());
     }
