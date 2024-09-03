@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import skkunion.union2024.account.dto.request.CreateAccountRequest;
 import skkunion.union2024.account.dto.response.CreateAccountResponse;
 import skkunion.union2024.account.service.AccountServiceFacade;
-import skkunion.union2024.global.exception.EmailVerificationExpiredException;
+import skkunion.union2024.global.exception.EmailVerificationException;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -33,13 +33,7 @@ public class AccountController {
     public ResponseEntity<Void> verifyAccount(
             @PathVariable final String verificationToken
     ) {
-        try {
-            accountServiceFacade.tryEmailVerification(verificationToken);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (EmailVerificationExpiredException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        accountServiceFacade.tryEmailVerification(verificationToken);
 
         return ResponseEntity.noContent().build();
     }

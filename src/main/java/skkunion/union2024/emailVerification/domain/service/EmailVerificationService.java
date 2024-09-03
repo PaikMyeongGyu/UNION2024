@@ -1,6 +1,5 @@
 package skkunion.union2024.emailVerification.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.emailVerification.domain.EmailVerification;
 import skkunion.union2024.emailVerification.domain.repository.EmailVerificationRepository;
+import skkunion.union2024.global.exception.AuthException;
 
 import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static skkunion.union2024.emailVerification.domain.config.EmailConfig.*;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +26,19 @@ public class EmailVerificationService {
     private final JavaMailSender mailSender;
 
     @Transactional
-    public void createTemporaryEmailAuth(String email, String token, LocalDateTime expiredTime) {
+    public void createTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
         if (isAlreadyExists(email)) {
-            refreshTemporaryEmailAuth(email, expiredTime);
+            refreshTemporaryEmailVerification(email, expiredTime);
             return;
         }
 
-        createNewTemporaryEmailAuth(email, token, expiredTime);
+        createNewTemporaryEmailVerification(email, token, expiredTime);
     }
 
     @Transactional
     public void createTemporaryEmailAuth(String email, String token) {
         LocalDateTime expiredTime = LocalDateTime.now().plusMinutes(EXPIRED_MINUTE);
-        createTemporaryEmailAuth(email, token, expiredTime);
+        createTemporaryEmailVerification(email, token, expiredTime);
     }
 
     @Async("emailExecutor")
@@ -57,19 +58,19 @@ public class EmailVerificationService {
             return;
         }
 
-        throw new EntityNotFoundException("EmailAuth가 존재하지 않습니다.");
+        throw new AuthException(ACCOUNT_NOT_FOUND);
     }
 
     public EmailVerification findEmailVerificationByToken(String token) {
         return emailAuthRepository.findByToken(token);
     }
 
-    private void createNewTemporaryEmailAuth(String email, String token, LocalDateTime expiredTime) {
+    private void createNewTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
         EmailVerification emailAuth = new EmailVerification(email, token, expiredTime);
         emailAuthRepository.save(emailAuth);
     }
 
-    private void refreshTemporaryEmailAuth(String email, LocalDateTime expiredTime) {
+    private void refreshTemporaryEmailVerification(String email, LocalDateTime expiredTime) {
         String token = randomAlphanumeric(TOKEN_LENGTH);
         emailAuthRepository.refreshEmailVerificationToken(email, token, expiredTime);
     }
