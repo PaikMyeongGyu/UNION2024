@@ -7,12 +7,14 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import skkunion.union2024.auth.domain.Authority;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.*;
-import static skkunion.union2024.member.domain.MemberState.ACTIVE;
 import static skkunion.union2024.member.domain.MemberState.UNVERIFIED;
 
 @Entity
@@ -20,10 +22,14 @@ import static skkunion.union2024.member.domain.MemberState.UNVERIFIED;
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
 @SQLRestriction("status = 'ACTIVE'")
+@Table(name = "member", indexes = {
+        @Index(name = "idx_email", columnList = "email")
+})
 public class Member {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable = false, unique = true, length = 20)

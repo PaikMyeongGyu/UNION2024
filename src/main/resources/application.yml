@@ -19,3 +19,6 @@ spring:
       hibernate:
         format_sql: true
 
+app:
+  secret-key: 13h9qqxn1e-oyn4-dn-d1ib
+  auth-header: Authorization
