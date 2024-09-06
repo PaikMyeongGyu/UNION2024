@@ -21,9 +21,8 @@ import static skkunion.union2024.member.domain.MemberState.UNVERIFIED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
-@SQLRestriction("status = 'ACTIVE'")
 @Table(name = "member", indexes = {
-        @Index(name = "idx_email", columnList = "email")
+        @Index(name = "idx_member_email", columnList = "email")
 })
 public class Member {
 
@@ -38,7 +37,7 @@ public class Member {
     @Column(nullable = false, unique = true, length = 40)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)

@@ -52,7 +52,7 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
             Claims claims = tokenHandler.getClaims(refreshToken);
 
             String email = String.valueOf(claims.get("username"));
-            Session findSession = sessionRepository.findByRefreshToken(refreshToken);
+            Session findSession = sessionRepository.findByEmail(email);
             if (findSession == null)
                 throw new BadCredentialsException("다시 로그인해주세요.");
 

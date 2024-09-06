@@ -44,7 +44,7 @@ public class AuthTokenGenerateFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return !(path.equals("/auth/login") || path.equals("/auth/reissue"));
+        return !(path.equals("/login") || path.equals("/reissue"));
     }
 
     private String generateAccessToken(Authentication authentication) {

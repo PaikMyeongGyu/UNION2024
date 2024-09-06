@@ -1,6 +1,7 @@
 package skkunion.union2024.auth;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import java.util.List;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UnionAuthenticationProvider implements AuthenticationProvider {
@@ -35,7 +37,6 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
-
         Member member = memberRepository.findByEmail(email)
                                     .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
         if (!passwordEncoder.matches(password, member.getPassword()))

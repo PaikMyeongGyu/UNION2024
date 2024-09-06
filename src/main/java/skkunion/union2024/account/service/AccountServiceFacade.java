@@ -46,5 +46,6 @@ public class AccountServiceFacade {
             throw new EmailVerificationException(EMAIL_VERIFICATION_EXPIRED);
 
         memberService.activateMember(findEmailVerification.getEmail());
+        emailVerificationService.deleteEmailAuth(findEmailVerification.getEmail());
     }
 }
