@@ -1,4 +1,4 @@
-package skkunion.union2024.emailVerification.domain.service;
+package skkunion.union2024.emailVerification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,7 +13,7 @@ import skkunion.union2024.global.exception.AuthException;
 import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.RandomStringUtils.*;
-import static skkunion.union2024.emailVerification.domain.config.EmailConfig.*;
+import static skkunion.union2024.emailVerification.config.EmailConfig.*;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 @Service

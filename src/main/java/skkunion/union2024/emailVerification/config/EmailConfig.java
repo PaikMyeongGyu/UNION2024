@@ -1,4 +1,4 @@
-package skkunion.union2024.emailVerification.domain.config;
+package skkunion.union2024.emailVerification.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
