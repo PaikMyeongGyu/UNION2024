@@ -1,6 +1,5 @@
 package skkunion.union2024.account.service;
 
-import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,8 @@ import skkunion.union2024.emailVerification.service.EmailVerificationService;
 import skkunion.union2024.global.exception.EmailVerificationException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.service.MemberService;
+
+import java.util.Optional;
 
 import static java.time.LocalDateTime.*;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
@@ -24,14 +25,40 @@ public class AccountServiceFacade {
     private final MemberService memberService;
 
     public void createAccountWithEmailVerification(String nickname, String email, String password) {
-        if (memberService.isMemberExist(email))
-            throw new EntityExistsException(email);
+        if (memberService.isMemberExistWith(email))
+            throw new EmailVerificationException(ACCOUNT_ALREADY_EXIST);
 
-        memberService.joinMember(new Member(nickname, email, password));
+        memberService.join(nickname, email, password);
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
         emailVerificationService.sendEmailVerificationMessage(email, token);
         emailVerificationService.createTemporaryEmailAuth(email, token);
+    }
+
+    public void deleteAccount(String email, String password) {
+        Member findMember = memberService.findMemberBy(email)
+                             .orElseThrow(() -> new EmailVerificationException(ACCOUNT_NOT_FOUND));
+
+        // 멤버 삭제 규칙 --> 한번 요청하고 패스워드 작성하게 할 것.
+        if (!memberService.memberPasswordIsMatch(findMember,password))
+            throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
+
+        memberService.deleteBy(email);
+    }
+
+    public void resendEmailVerification(String email, String password) {
+        Member findMember = memberService.findMemberBy(email)
+                            .orElseThrow(() -> new EmailVerificationException(ACCOUNT_NOT_FOUND));
+
+        if (findMember.isActivated())
+            throw new EmailVerificationException(INVALID_REQUEST);
+
+        if (!memberService.memberPasswordIsMatch(findMember, password))
+            throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
+
+        String token = randomAlphanumeric(TOKEN_LENGTH);
+        emailVerificationService.sendEmailVerificationMessage(email, token);
+        emailVerificationService.refreshTemporaryEmailVerification(email, token);
     }
 
     @Transactional

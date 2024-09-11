@@ -16,6 +16,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.*;
+import static skkunion.union2024.member.domain.MemberState.ACTIVE;
 import static skkunion.union2024.member.domain.MemberState.UNVERIFIED;
 
 @Entity
@@ -67,5 +68,9 @@ public class Member {
 
     public Member(final String nickname, final String email, final String password) {
         this(null, nickname, email, password);
+    }
+
+    public boolean isActivated() {
+        return status == ACTIVE;
     }
 }

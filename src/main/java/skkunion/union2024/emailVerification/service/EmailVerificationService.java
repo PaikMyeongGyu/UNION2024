@@ -27,11 +27,6 @@ public class EmailVerificationService {
 
     @Transactional
     public void createTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
-        if (isAlreadyExists(email)) {
-            refreshTemporaryEmailVerification(email, expiredTime);
-            return;
-        }
-
         createNewTemporaryEmailVerification(email, token, expiredTime);
     }
 
@@ -39,6 +34,15 @@ public class EmailVerificationService {
     public void createTemporaryEmailAuth(String email, String token) {
         LocalDateTime expiredTime = LocalDateTime.now().plusMinutes(EXPIRED_MINUTE);
         createTemporaryEmailVerification(email, token, expiredTime);
+    }
+
+    @Transactional
+    public void refreshTemporaryEmailVerification(String email, String token) {
+        refreshTemporaryEmailVerification(email, token, LocalDateTime.now().plusMinutes(EXPIRED_MINUTE));
+    }
+
+    public void refreshTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
+        emailAuthRepository.refreshEmailVerificationToken(email, token, expiredTime);
     }
 
     @Async("emailExecutor")
@@ -68,11 +72,6 @@ public class EmailVerificationService {
     private void createNewTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
         EmailVerification emailAuth = new EmailVerification(email, token, expiredTime);
         emailAuthRepository.save(emailAuth);
-    }
-
-    private void refreshTemporaryEmailVerification(String email, LocalDateTime expiredTime) {
-        String token = randomAlphanumeric(TOKEN_LENGTH);
-        emailAuthRepository.refreshEmailVerificationToken(email, token, expiredTime);
     }
 
     private boolean isAlreadyExists(String email) {
