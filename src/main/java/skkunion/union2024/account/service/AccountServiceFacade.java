@@ -35,6 +35,7 @@ public class AccountServiceFacade {
         emailVerificationService.createTemporaryEmailAuth(email, token);
     }
 
+    @Transactional
     public void deleteAccount(String email, String password) {
         Member findMember = memberService.findMemberBy(email)
                              .orElseThrow(() -> new EmailVerificationException(ACCOUNT_NOT_FOUND));
