@@ -1,4 +1,4 @@
-package skkunion.union2024.auth;
+package skkunion.union2024.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,8 +34,8 @@ public class SecurityConfig {
                         sessionRepository, authorityRepository), AccessTokenValidatorFilter.class)
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/login", "/logout", "/reissue").authenticated()
-                        .requestMatchers("/accounts", "/accounts/*").permitAll());
+                        .requestMatchers(AuthenticationConfig.getAuthMatchers()).authenticated()
+                        .requestMatchers(PermitAllConfig.getPermitAllMatchers()).permitAll());
 
         return http.build();
     }

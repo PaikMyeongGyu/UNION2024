@@ -21,7 +21,7 @@ public enum ExceptionCode {
     EMAIL_VERIFICATION_EXPIRED(NOT_FOUND, 1007, "이메일 인증 정보가 만료됐습니다. 인증을 재요청해주세요."),
     ACCOUNT_INFO_DOES_NOT_MATCH(UNAUTHORIZED, 1008, "계정과 비밀번호가 일치하지 않습니다."),
     ACCOUNT_ALREADY_EXIST(BAD_REQUEST, 1009, "이미 만들어진 계정이 존재합니다.");
-
+    
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;
