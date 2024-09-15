@@ -3,7 +3,8 @@ package skkunion.union2024.board.domain;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import skkunion.union2024.group.domain.Club;
+import skkunion.union2024.club.domain.Club;
+import skkunion.union2024.club.domain.MemberClub;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -21,14 +22,18 @@ public class ClubBoard {
     @JoinColumn(name = "club_id")
     private Club club;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_club_id")
+    private MemberClub memberClub;
+
     @Column(nullable = false, length = 30)
     private String title;
 
     @Column(nullable = false)
-    private Long memberId;
+    private String memberEmail;
 
     @Column(nullable = false, length = 20)
-    private String writerName;
+    private String nickname;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -37,14 +42,14 @@ public class ClubBoard {
     @ColumnDefault("0")
     private Long likes;
 
-    public ClubBoard(String title, Long memberId, String writerName, String content) {
+    public ClubBoard(String title, String memberEmail, String nickname, String content) {
         this.title = title;
-        this.memberId = memberId;
-        this.writerName = writerName;
+        this.memberEmail = memberEmail;
+        this.nickname = nickname;
         this.content = content;
     }
 
-    public static ClubBoard of(String title, Long memberId, String writerName, String content) {
-        return new ClubBoard(title, memberId, writerName, content);
+    public static ClubBoard of(String title, String memberEmail, String writerName, String content) {
+        return new ClubBoard(title, memberEmail, writerName, content);
     }
 }

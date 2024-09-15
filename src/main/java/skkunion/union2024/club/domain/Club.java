@@ -1,7 +1,8 @@
-package skkunion.union2024.group.domain;
+package skkunion.union2024.club.domain;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import skkunion.union2024.board.domain.ClubBoard;
 
@@ -40,4 +41,8 @@ public class Club {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Long totalMembers;
 }
