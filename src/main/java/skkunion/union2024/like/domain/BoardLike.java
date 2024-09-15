@@ -10,20 +10,20 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "user_like", indexes = {
-        @Index(name = "idx_like", columnList = "board_id, member_id")
+@Table(name = "board_like", indexes = {
+        @Index(name = "idx_board_like", columnList = "board_id, member_email")
 })
-public class UserLike {
+public class BoardLike {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "user_like_id")
+    @Column(name = "board_like_id")
     private Long id;
 
     @Column(nullable = false)
     private Long boardId;
 
-    @Column(nullable = false)
-    private Long memberId;
+    @Column(nullable = false, length = 40)
+    private String memberEmail;
 
 }

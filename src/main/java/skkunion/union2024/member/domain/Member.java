@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import skkunion.union2024.group.domain.MemberClub;
+import skkunion.union2024.club.domain.MemberClub;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

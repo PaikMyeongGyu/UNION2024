@@ -1,4 +1,4 @@
-package skkunion.union2024.group.domain;
+package skkunion.union2024.club.domain;
 
 import lombok.Getter;
 
@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum ClubAuthority {
     PRESIDENT("president"),
-    VICE_PRESIDENT("vice_president"),
+    MANAGER("manager"),
     GENERAL("general");
 
     public final String authority;
