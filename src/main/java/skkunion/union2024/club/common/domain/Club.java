@@ -1,9 +1,10 @@
-package skkunion.union2024.club.domain;
+package skkunion.union2024.club.common.domain;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import skkunion.union2024.board.domain.ClubBoard;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,10 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "club", indexes = {
+        @Index(name = "idx_club_total_members", columnList = "totalMembers DESC")
+})
 public class Club {
 
     @Id
@@ -25,7 +30,7 @@ public class Club {
     private Long id;
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
-    private List<MemberClub> memberClubs = new ArrayList<>();
+    private List<ClubMember> memberClubs = new ArrayList<>();
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();
@@ -45,4 +50,15 @@ public class Club {
     @Column(nullable = false)
     @ColumnDefault("0")
     private Long totalMembers;
+
+    public Club(final String clubName, final String presidentName, final String description) {
+        this.clubName = clubName;
+        this.presidentName = presidentName;
+        this.description = description;
+        this.totalMembers = 0L;
+    }
+
+    public static Club of(final String clubName, final String presidentName, final String description) {
+        return new Club(clubName, presidentName, description);
+    }
 }

@@ -1,8 +1,9 @@
-package skkunion.union2024.club.domain;
+package skkunion.union2024.club.common.domain;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import skkunion.union2024.board.domain.ClubBoard;
 import skkunion.union2024.member.domain.Member;
 
@@ -14,6 +15,8 @@ import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+import static skkunion.union2024.club.common.domain.ClubAuthority.GENERAL;
+import static skkunion.union2024.club.common.domain.ClubAuthority.PRESIDENT;
 
 
 /**
@@ -28,27 +31,31 @@ import static lombok.AccessLevel.PROTECTED;
  */
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "member_club", indexes = {
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "club_member", indexes = {
         @Index(name = "idx_club_member", columnList = "club_id, member_id"),
         @Index(name = "idx_club_authority", columnList = "club_id, club_authority")
 })
-public class MemberClub {
+public class ClubMember {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "member_club_id")
+    @Column(name = "club_member_id")
     private Long id;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
 
-    @OneToMany(mappedBy = "memberClub", cascade = PERSIST, fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @OneToMany(mappedBy = "clubMember", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();
+
+    @Column(nullable = false, length = 20)
+    private String nickName;
 
     @Enumerated(EnumType.STRING)
     private ClubAuthority clubAuthority;
@@ -57,4 +64,18 @@ public class MemberClub {
     @Column(updatable = false)
     private LocalDateTime joinedAt;
 
+    public ClubMember(Club club, Member member, String nickName, ClubAuthority clubAuthority) {
+        this.club = club;
+        this.nickName = nickName;
+        this.member = member;
+        this.clubAuthority = clubAuthority;
+    }
+
+    public static ClubMember President(Club club, Member member, String nickName) {
+        return new ClubMember(club, member, nickName, PRESIDENT);
+    }
+
+    public static ClubMember General(Club club, Member member, String nickName) {
+        return new ClubMember(club, member, nickName, GENERAL);
+    }
 }
