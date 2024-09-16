@@ -9,6 +9,7 @@ import skkunion.union2024.account.dto.request.DeleteAccountRequest;
 import skkunion.union2024.account.dto.request.ResendEmailVerificationRequest;
 import skkunion.union2024.account.dto.response.CreateAccountResponse;
 import skkunion.union2024.account.service.AccountServiceFacade;
+import skkunion.union2024.account.service.AccountServiceTempFacade;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -17,6 +18,10 @@ import static org.springframework.http.HttpStatus.*;
 public class AccountController {
 
     private final AccountServiceFacade accountServiceFacade;
+    /**
+     * 편리성을 위해 임시로 만든 코드로 제거해줘야 합니다.
+     */
+    private final AccountServiceTempFacade accountServiceTempFacade;
 
     @PostMapping("/accounts")
     public ResponseEntity<CreateAccountResponse> createAccount(
@@ -26,7 +31,8 @@ public class AccountController {
         String email = accountRequest.email();
         String password = accountRequest.password();
 
-        accountServiceFacade.createAccountWithEmailVerification(nickname, email, password);
+        // 편의성을 위해 임시로 만든 코드로 Temp가 아닌 다른 코드로 변경해주어야 합니다.
+        accountServiceTempFacade.createAccountWithEmailVerification(nickname, email, password);
         return ResponseEntity.status(CREATED).body(new CreateAccountResponse(nickname, email));
     }
 

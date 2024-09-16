@@ -41,7 +41,6 @@ public class ClubBoard {
     private String content;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Long likes;
 
     public ClubBoard(String title, String memberEmail, String nickname, String content) {

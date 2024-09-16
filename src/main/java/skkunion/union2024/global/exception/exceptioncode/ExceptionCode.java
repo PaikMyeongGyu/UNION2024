@@ -23,7 +23,10 @@ public enum ExceptionCode {
     ACCOUNT_ALREADY_EXIST(BAD_REQUEST, 1009, "이미 만들어진 계정이 존재합니다."),
 
     // 2000번 대(동아리 관련 코드)
-    CLUB_NAME_ALREADY_EXIST(BAD_REQUEST, 2001, "이미 존재하는 이름의 동아리입니다.");
+    CLUB_NAME_ALREADY_EXIST(BAD_REQUEST, 2001, "이미 존재하는 이름의 동아리입니다."),
+    CLUB_NOT_FOUND(NOT_FOUND, 2002, "존재하지 않는 동아리입니다."),
+    CLUB_MEMBER_ALREADY_EXIST(BAD_REQUEST, 2003, "이미 가입된 회원입니다."),
+    CLUB_MEMBER_DUPLICATED_NICKNAME(BAD_REQUEST, 2004, "이미 존재하는 닉네임입니다.");
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;

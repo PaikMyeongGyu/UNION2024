@@ -13,21 +13,19 @@ import java.util.List;
 
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "club", indexes = {
-        @Index(name = "idx_club_total_members", columnList = "totalMembers DESC")
+        @Index(name = "idx_club_total_members", columnList = "totalMembers DESC"),
 })
 public class Club {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "club_id")
-    private Long id;
+    @Column(nullable = false, length = 20)
+    private String slug;
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
     private List<ClubMember> memberClubs = new ArrayList<>();
@@ -48,17 +46,17 @@ public class Club {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Long totalMembers;
 
-    public Club(final String clubName, final String presidentName, final String description) {
+    public Club(final String slug, final String clubName, final String presidentName, final String description) {
+        this.slug = slug;
         this.clubName = clubName;
         this.presidentName = presidentName;
         this.description = description;
-        this.totalMembers = 0L;
+        this.totalMembers = 1L;
     }
 
-    public static Club of(final String clubName, final String presidentName, final String description) {
-        return new Club(clubName, presidentName, description);
+    public static Club of(final String slug, final String clubName, final String presidentName, final String description) {
+        return new Club(slug, clubName, presidentName, description);
     }
 }

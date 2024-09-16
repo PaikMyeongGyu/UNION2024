@@ -15,6 +15,6 @@ public class AuthenticationConfig {
         authMatchers.add("/login");
         authMatchers.add("/logout");
         authMatchers.add("/reissue");
-        authMatchers.add("/clubs/manage");
+        authMatchers.add("/clubs/*");
     }
 }

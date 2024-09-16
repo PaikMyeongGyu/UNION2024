@@ -34,7 +34,8 @@ import static skkunion.union2024.club.common.domain.ClubAuthority.PRESIDENT;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "club_member", indexes = {
         @Index(name = "idx_club_member", columnList = "club_id, member_id"),
-        @Index(name = "idx_club_authority", columnList = "club_id, club_authority")
+        @Index(name = "idx_club_authority", columnList = "club_id, club_authority"),
+        @Index(name = "idx_club_nickname", columnList = "nick_name")
 })
 public class ClubMember {
 
@@ -55,7 +56,7 @@ public class ClubMember {
     private List<ClubBoard> clubBoards = new ArrayList<>();
 
     @Column(nullable = false, length = 20)
-    private String nickName;
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
     private ClubAuthority clubAuthority;
@@ -64,9 +65,9 @@ public class ClubMember {
     @Column(updatable = false)
     private LocalDateTime joinedAt;
 
-    public ClubMember(Club club, Member member, String nickName, ClubAuthority clubAuthority) {
+    public ClubMember(Club club, Member member, String nickname, ClubAuthority clubAuthority) {
         this.club = club;
-        this.nickName = nickName;
+        this.nickname = nickname;
         this.member = member;
         this.clubAuthority = clubAuthority;
     }
