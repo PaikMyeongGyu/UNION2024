@@ -54,6 +54,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     // 검증 설정
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // 액츄에이터 설정
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // 프로메테우스 설정
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     // MySQL 관련 설정
     runtimeOnly 'com.mysql:mysql-connector-j'

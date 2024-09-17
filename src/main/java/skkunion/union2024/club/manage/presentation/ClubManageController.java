@@ -61,5 +61,13 @@ public class ClubManageController {
         return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, userEmail, clubMemberId));
     }
 
-
+    // 더미 API 삭제 요청!
+    @GetMapping("/test")
+    public ResponseEntity<List<ClubMemberDto>> showMembersInClub2(
+            @RequestParam String clubSlug,
+            @RequestParam(required = false) Long clubMemberId,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(clubGeneralService.getClubMembers(clubSlug));
+    }
 }

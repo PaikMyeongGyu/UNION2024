@@ -54,6 +54,12 @@ public class ClubGeneralService {
         clubMemberRepository.save(generalMember);
     }
 
+    // 지워야 합니다.
+    @Transactional(readOnly = true)
+    public List<ClubMemberDto> getClubMembers(String slug) {
+        return clubQueryRepository.getMembersWithoutId(slug);
+    }
+
     @Transactional(readOnly = true)
     public ClubMemberResponse findMemberBySlug(String slug, String email) {
         Club findClub = IsMemberInClub(slug, email);
@@ -83,10 +89,10 @@ public class ClubGeneralService {
     private ClubMemberResponse generateClubMemberResponse(List<ClubMemberDto> findClubMembersWithSlug, Club findClub) {
         Boolean hasNext = findClubMembersWithSlug.size() > PAGE_SIZE ? TRUE : FALSE;
         Long nextId = hasNext ? findClubMembersWithSlug.get(findClubMembersWithSlug.size() - 2).id() : null;
-        Collections.sort(findClubMembersWithSlug, comparing(ClubMemberDto::authority).
-                thenComparing(ClubMemberDto::id)); // President, Manager, General 순
-        findClubMembersWithSlug.remove(findClubMembersWithSlug.size() - 1);
 
+        Collections.sort(findClubMembersWithSlug, comparing(ClubMemberDto::authority).
+                                                  thenComparing(ClubMemberDto::id)); // President, Manager, General 순
+        findClubMembersWithSlug.remove(findClubMembersWithSlug.size() - 1);
 
         Map<ClubAuthority, List<ClubMemberSelectDto>> clubMembers
                 = findClubMembersWithSlug.stream()
