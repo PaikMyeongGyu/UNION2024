@@ -1,4 +1,4 @@
-package skkunion.union2024.club.manage.service.request;
+package skkunion.union2024.club.manage.service.servicedto;
 
 import skkunion.union2024.member.domain.Member;
 

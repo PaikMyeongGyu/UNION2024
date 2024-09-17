@@ -7,8 +7,7 @@ import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.common.domain.repository.ClubRepository;
 import skkunion.union2024.club.common.domain.repository.ClubMemberRepository;
-import skkunion.union2024.club.manage.service.request.CreateClubDto;
-import skkunion.union2024.club.manage.service.request.ClubJoinDto;
+import skkunion.union2024.club.manage.service.servicedto.CreateClubDto;
 import skkunion.union2024.global.exception.ClubException;
 
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
@@ -34,18 +33,4 @@ public class ClubManageService {
         clubMemberRepository.save(president);
     }
 
-    @Transactional
-    public void joinClub(ClubJoinDto req) {
-        Club findClub = clubRepository.findClubBySlug(req.clubSlug())
-                                      .orElseThrow(() -> new ClubException(CLUB_NOT_FOUND));
-        clubMemberRepository.findByClubAndMember(findClub,req.member())
-                            .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_ALREADY_EXIST); });
-        clubMemberRepository.findByNickname(req.nickName())
-                            .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_DUPLICATED_NICKNAME); });
-
-        clubRepository.updateTotalMembersBySlug(req.clubSlug());
-
-        ClubMember generalMember = ClubMember.General(findClub, req.member(), req.nickName());
-        clubMemberRepository.save(generalMember);
-    }
 }

@@ -1,6 +1,6 @@
-package skkunion.union2024.club.manage.presentation.dto.request;
+package skkunion.union2024.club.dto.request;
 
-import skkunion.union2024.club.manage.service.request.ClubJoinDto;
+import skkunion.union2024.club.manage.service.servicedto.ClubJoinDto;
 import skkunion.union2024.member.domain.Member;
 
 public record ClubJoinRequest(

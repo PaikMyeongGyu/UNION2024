@@ -1,6 +1,7 @@
 package skkunion.union2024.club.common.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
@@ -33,6 +34,7 @@ public class Club {
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();
 
+    @Getter
     @Column(nullable = false, length = 20)
     private String clubName;
 
@@ -45,6 +47,7 @@ public class Club {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @Getter
     @Column(nullable = false)
     private Long totalMembers;
 
@@ -59,4 +62,5 @@ public class Club {
     public static Club of(final String slug, final String clubName, final String presidentName, final String description) {
         return new Club(slug, clubName, presidentName, description);
     }
+
 }

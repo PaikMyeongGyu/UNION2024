@@ -16,12 +16,14 @@ import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
+import skkunion.union2024.member.domain.MemberState;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.member.domain.MemberState.ACTIVE;
 
 
 @Slf4j
@@ -39,6 +41,8 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         Member member = memberRepository.findByEmail(email)
                                     .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+        if (member.getStatus() != ACTIVE)
+            throw new AuthException(ACCOUNT_NOT_ACTIVE);
         if (!passwordEncoder.matches(password, member.getPassword()))
             throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
 

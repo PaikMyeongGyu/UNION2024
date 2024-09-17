@@ -1,6 +1,7 @@
 package skkunion.union2024.club.common.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,19 +34,20 @@ import static skkunion.union2024.club.common.domain.ClubAuthority.PRESIDENT;
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "club_member", indexes = {
-        @Index(name = "idx_club_member", columnList = "club_id, member_id"),
-        @Index(name = "idx_club_authority", columnList = "club_id, club_authority"),
-        @Index(name = "idx_club_nickname", columnList = "nick_name")
+        @Index(name = "idx_club_member", columnList = "slug, member_id"),
+        @Index(name = "idx_club_authority", columnList = "slug, club_authority, club_member_id"),
+        @Index(name = "idx_club_nick_name", columnList = "nick_name")
 })
-public class ClubMember {
+public class ClubMember implements Comparable<ClubMember> {
 
     @Id
+    @Getter
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "club_member_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "club_id")
+    @JoinColumn(name = "slug")
     private Club club;
 
     @ManyToOne(fetch = LAZY)
@@ -55,19 +57,22 @@ public class ClubMember {
     @OneToMany(mappedBy = "clubMember", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();
 
+    @Getter
     @Column(nullable = false, length = 20)
-    private String nickname;
+    private String nickName;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     private ClubAuthority clubAuthority;
 
+    @Getter
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime joinedAt;
 
-    public ClubMember(Club club, Member member, String nickname, ClubAuthority clubAuthority) {
+    public ClubMember(Club club, Member member, String nickName, ClubAuthority clubAuthority) {
         this.club = club;
-        this.nickname = nickname;
+        this.nickName = nickName;
         this.member = member;
         this.clubAuthority = clubAuthority;
     }
@@ -78,5 +83,14 @@ public class ClubMember {
 
     public static ClubMember General(Club club, Member member, String nickName) {
         return new ClubMember(club, member, nickName, GENERAL);
+    }
+
+    @Override
+    public int compareTo(ClubMember o) {
+        if (clubAuthority == o.clubAuthority) {
+            return id.compareTo(o.id);
+        } else {
+            return clubAuthority.compareTo(o.clubAuthority);
+        }
     }
 }
