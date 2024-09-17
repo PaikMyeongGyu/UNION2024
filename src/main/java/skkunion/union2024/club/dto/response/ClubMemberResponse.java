@@ -10,6 +10,6 @@ public record ClubMemberResponse(
         Long totalMembers,
         Boolean hasNext,
         Long nextId,
-        Map<ClubAuthority, List<ClubMemberDto>> clubMembers
+        Map<ClubAuthority, List<ClubMemberSelectDto>> clubMembers
 ) {
 }
