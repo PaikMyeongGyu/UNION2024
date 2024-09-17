@@ -3,8 +3,9 @@ package skkunion.union2024.board.domain;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import skkunion.union2024.club.domain.Club;
-import skkunion.union2024.club.domain.MemberClub;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import skkunion.union2024.club.common.domain.Club;
+import skkunion.union2024.club.common.domain.ClubMember;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -12,6 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class ClubBoard {
 
     @Id @GeneratedValue(strategy = IDENTITY)
@@ -23,8 +25,8 @@ public class ClubBoard {
     private Club club;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_club_id")
-    private MemberClub memberClub;
+    @JoinColumn(name = "club_member_id")
+    private ClubMember clubMember;
 
     @Column(nullable = false, length = 30)
     private String title;
@@ -39,7 +41,6 @@ public class ClubBoard {
     private String content;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Long likes;
 
     public ClubBoard(String title, String memberEmail, String nickname, String content) {

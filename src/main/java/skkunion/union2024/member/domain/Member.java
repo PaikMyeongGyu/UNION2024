@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import skkunion.union2024.club.domain.MemberClub;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import skkunion.union2024.club.common.domain.ClubMember;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import static skkunion.union2024.member.domain.MemberState.UNVERIFIED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
 public class Member {
 
@@ -31,7 +33,7 @@ public class Member {
     private Long id;
 
     @OneToMany(mappedBy = "member", cascade = PERSIST, fetch = LAZY)
-    private List<MemberClub> memberClubs = new ArrayList<>();
+    private List<ClubMember> memberClubs = new ArrayList<>();
 
     @Column(nullable = false, unique = true, length = 20)
     private String nickname;

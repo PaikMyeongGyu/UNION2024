@@ -25,4 +25,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(e.getCode(), e.getMessage()));
     }
 
+    @ExceptionHandler(ClubException.class)
+    public ResponseEntity<ErrorResponse> handleClubException(final ClubException e) {
+
+        return ResponseEntity.status(e.getHttpStatus())
+                .body(new ErrorResponse(e.getCode(), e.getMessage()));
+    }
+
+
 }
