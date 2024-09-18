@@ -54,12 +54,6 @@ public class ClubGeneralService {
         clubMemberRepository.save(generalMember);
     }
 
-    // 지워야 합니다.
-    @Transactional(readOnly = true)
-    public List<ClubMemberDto> getClubMembers(String slug) {
-        return clubQueryRepository.getMembersWithoutId(slug);
-    }
-
     @Transactional(readOnly = true)
     public ClubMemberResponse findMemberBySlug(String slug, String email) {
         Club findClub = IsMemberInClub(slug, email);

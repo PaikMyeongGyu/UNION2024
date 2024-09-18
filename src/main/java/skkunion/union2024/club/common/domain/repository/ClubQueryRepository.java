@@ -70,6 +70,7 @@ public class ClubQueryRepository {
                 "FROM club_member USE INDEX (idx_club_authority) " +
                 "WHERE slug = :slug " +
                 "AND club_authority IN ('PRESIDENT', 'MANAGER', 'GENERAL') " +
+                "ORDER BY slug, club_authority, club_member_id " +
                 "LIMIT :pageSize";
 
         Query query = entityManager.createNativeQuery(sql)
@@ -97,6 +98,7 @@ public class ClubQueryRepository {
                 "WHERE slug = :slug " +
                 "AND club_authority = 'GENERAL' " +
                 "AND club_member_id > :clubMemberId " +
+                "ORDER BY slug, club_authority, club_member_id " +
                 "LIMIT :pageSize";
 
         Query query = entityManager.createNativeQuery(sql)
