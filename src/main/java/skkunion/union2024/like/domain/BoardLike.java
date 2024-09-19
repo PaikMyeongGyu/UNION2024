@@ -1,8 +1,11 @@
 package skkunion.union2024.like.domain;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import skkunion.union2024.board.domain.ClubBoard;
+import skkunion.union2024.club.common.domain.ClubMember;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -11,7 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "board_like", indexes = {
-        @Index(name = "idx_board_like", columnList = "board_id, member_email")
+        @Index(name = "idx_board_like", columnList = "club_board_id, club_member_id")
 })
 public class BoardLike {
 
@@ -20,10 +23,19 @@ public class BoardLike {
     @Column(name = "board_like_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "club_board_id")
+    private ClubBoard clubBoard;
+
     @Column(nullable = false)
-    private Long boardId;
+    private Long clubMemberId;
 
-    @Column(nullable = false, length = 40)
-    private String memberEmail;
+    public BoardLike(ClubBoard clubBoard, Long clubMemberId) {
+        this.clubBoard = clubBoard;
+        this.clubMemberId = clubMemberId;
+    }
 
+    public static BoardLike of(ClubBoard clubBoard, Long clubMemberId) {
+        return new BoardLike(clubBoard, clubMemberId);
+    }
 }
