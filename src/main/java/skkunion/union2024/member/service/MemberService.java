@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import skkunion.union2024.global.exception.EmailVerificationException;
+import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
@@ -22,6 +24,14 @@ public class MemberService {
 
     public void deleteBy(String email) {
         memberRepository.deleteByMemberEmail(email);
+    }
+
+    @Transactional
+    public void completeDelete(String email) {
+        Member findMember = findMemberBy(email).orElseThrow(()
+                -> new EmailVerificationException(ExceptionCode.ACCOUNT_NOT_FOUND));
+
+        memberRepository.deleteMemberById(findMember.getId());
     }
 
     public Optional<Member> findMemberBy(String email) {

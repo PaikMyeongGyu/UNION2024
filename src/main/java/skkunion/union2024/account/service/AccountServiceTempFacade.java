@@ -59,7 +59,7 @@ public class AccountServiceTempFacade {
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
-        emailVerificationService.sendEmailVerificationMessage(email, token);
+        // emailVerificationService.sendEmailVerificationMessage(email, token);
         emailVerificationService.refreshTemporaryEmailVerification(email, token);
     }
 

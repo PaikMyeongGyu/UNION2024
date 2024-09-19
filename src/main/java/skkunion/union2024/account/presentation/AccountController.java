@@ -2,7 +2,6 @@ package skkunion.union2024.account.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import skkunion.union2024.account.dto.request.CreateAccountRequest;
 import skkunion.union2024.account.dto.request.DeleteAccountRequest;
@@ -21,7 +20,7 @@ public class AccountController {
     /**
      * 편리성을 위해 임시로 만든 코드로 제거해줘야 합니다.
      */
-    private final AccountServiceTempFacade accountServiceTempFacade;
+    // private final AccountServiceFacade accountServiceTempFacade;
 
     @PostMapping("/accounts")
     public ResponseEntity<CreateAccountResponse> createAccount(
@@ -32,7 +31,7 @@ public class AccountController {
         String password = accountRequest.password();
 
         // 편의성을 위해 임시로 만든 코드로 Temp가 아닌 다른 코드로 변경해주어야 합니다.
-        accountServiceTempFacade.createAccountWithEmailVerification(nickname, email, password);
+        accountServiceFacade.createAccountWithEmailVerification(nickname, email, password);
         return ResponseEntity.status(CREATED).body(new CreateAccountResponse(nickname, email));
     }
 

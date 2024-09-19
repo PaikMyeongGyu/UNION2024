@@ -31,4 +31,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             WHERE member.email = :memberEmail
             """)
     void activateMemberByEmail(@Param("memberEmail") final String memberEmail);
+
+    @Modifying
+    @Query("""
+        DELETE from Member member
+        WHERE member.id = :memberId
+        """)
+    void deleteMemberById(@Param("memberId") final Long memberId);
 }
