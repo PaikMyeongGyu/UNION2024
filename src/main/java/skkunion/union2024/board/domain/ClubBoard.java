@@ -1,6 +1,7 @@
 package skkunion.union2024.board.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class ClubBoard {
 
     @Id @GeneratedValue(strategy = IDENTITY)
+    @Getter
     @Column(name = "club_board_id")
     private Long id;
 
@@ -43,14 +45,17 @@ public class ClubBoard {
     @Column(nullable = false)
     private Long likes;
 
-    public ClubBoard(String title, String memberEmail, String nickname, String content) {
+    public ClubBoard(String title, String content, Club club, ClubMember clubMember, String memberEmail, String nickname) {
         this.title = title;
+        this.content = content;
+        this.club = club;
+        this.clubMember = clubMember;
         this.memberEmail = memberEmail;
         this.nickname = nickname;
-        this.content = content;
+        this.likes = 0L;
     }
 
-    public static ClubBoard of(String title, String memberEmail, String writerName, String content) {
-        return new ClubBoard(title, memberEmail, writerName, content);
+    public static ClubBoard of(String title,String content, Club club, ClubMember clubMember, String memberEmail, String writerName) {
+        return new ClubBoard(title, content, club, clubMember, memberEmail, writerName);
     }
 }

@@ -17,5 +17,7 @@ public class AuthenticationConfig {
         authMatchers.add("/reissue");
         authMatchers.add("/clubs/*");
         authMatchers.add("/clubs/members");
+        authMatchers.add("/boards");
+        authMatchers.add("/boards/like");
     }
 }

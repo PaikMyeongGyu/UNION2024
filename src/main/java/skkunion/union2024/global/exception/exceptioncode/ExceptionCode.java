@@ -28,7 +28,11 @@ public enum ExceptionCode {
     CLUB_NOT_FOUND(NOT_FOUND, 2002, "존재하지 않는 동아리입니다."),
     CLUB_MEMBER_ALREADY_EXIST(BAD_REQUEST, 2003, "이미 가입된 회원입니다."),
     CLUB_MEMBER_DUPLICATED_NICKNAME(BAD_REQUEST, 2004, "이미 존재하는 닉네임입니다."),
-    CLUB_MEMBER_NOT_FOUND(NOT_FOUND, 2005, "동아리에 가입되어 있지 않은 회원입니다.");
+    CLUB_MEMBER_NOT_FOUND(NOT_FOUND, 2005, "동아리에 가입되어 있지 않은 회원입니다."),
+
+
+    // 3000번 대(보드 관련 코드)
+    CLUB_BOARD_NOT_FOUND(NOT_FOUND, 3001, "게시글이 존재하지 않습니다.");
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;
