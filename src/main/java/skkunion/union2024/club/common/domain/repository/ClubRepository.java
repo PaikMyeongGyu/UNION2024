@@ -17,4 +17,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     @Transactional
     @Query(value = "UPDATE club SET total_members = total_members + 1 WHERE slug = :slug", nativeQuery = true)
     int updateTotalMembersBySlug(@Param("slug") String slug);
+
 }

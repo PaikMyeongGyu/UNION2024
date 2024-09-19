@@ -35,12 +35,15 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
 
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
         Member member = memberRepository.findByEmail(email)
                                     .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+
+        log.info("동작하엿습니다.");
         if (member.getStatus() != ACTIVE)
             throw new AuthException(ACCOUNT_NOT_ACTIVE);
         if (!passwordEncoder.matches(password, member.getPassword()))

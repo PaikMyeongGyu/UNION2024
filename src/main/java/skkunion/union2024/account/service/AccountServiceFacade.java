@@ -31,7 +31,7 @@ public class AccountServiceFacade {
         memberService.join(nickname, email, password);
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
-        emailVerificationService.sendEmailVerificationMessage(email, token);
+        emailVerificationService.sendEmailVerificationMessageWithRetry(3, email, token);
         emailVerificationService.createTemporaryEmailAuth(email, token);
     }
 
@@ -58,7 +58,7 @@ public class AccountServiceFacade {
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
-        emailVerificationService.sendEmailVerificationMessage(email, token);
+        emailVerificationService.sendEmailVerificationMessageWithRetry(3, email, token);
         emailVerificationService.refreshTemporaryEmailVerification(email, token);
     }
 

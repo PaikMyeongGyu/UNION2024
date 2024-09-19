@@ -1,7 +1,13 @@
 package skkunion.union2024.emailVerification.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.SendFailedException;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.angus.mail.util.MailConnectException;
+import org.springframework.mail.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -9,13 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.emailVerification.domain.EmailVerification;
 import skkunion.union2024.emailVerification.domain.repository.EmailVerificationRepository;
 import skkunion.union2024.global.exception.AuthException;
+import skkunion.union2024.member.service.MemberService;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
+import static jakarta.mail.Message.RecipientType.TO;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static skkunion.union2024.emailVerification.config.EmailConfig.*;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
@@ -23,6 +33,7 @@ public class EmailVerificationService {
     public static final int TOKEN_LENGTH = 10;
 
     private final EmailVerificationRepository emailAuthRepository;
+    private final MemberService memberService;
     private final JavaMailSender mailSender;
 
     @Transactional
@@ -46,10 +57,43 @@ public class EmailVerificationService {
     }
 
     @Async("emailExecutor")
-    public void sendEmailVerificationMessage(String toEmail, String token) {
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void sendEmailVerificationMessageWithRetry(int cnt, String email, String token) {
+        if (cnt == 0) {
+            log.error("This email({}) Verification is Failed", email);
+            return;
+        }
+
+        try {
+            sendEmailVerificationMessage(email, token);
+        } catch(MailSendException e) {
+            Map<Object, Exception> failedMessages = e.getFailedMessages();
+            for (Map.Entry<Object, Exception> entry : failedMessages.entrySet()) {
+                Exception cause = entry.getValue();
+                if (cause instanceof MailConnectException) {
+                    // 포트 문제 timeout 문제 처리
+                    sendEmailVerificationMessageWithRetry(cnt-1, email, token);
+                    log.error("retry: cnt={}", cnt);
+                }
+                else if (cause instanceof MessagingException) {
+                    // 이상한 메일을 쓰면 여기로 들어옴.
+                    // 대신 반송을 했을 때, 문제를 체크할 방법은 없음. --> 스케줄링을 통해 해결
+                    SendFailedException sfe = (SendFailedException) cause;
+                    if (sfe.getMessage().equals("Invalid Addresses")) {
+                        blockInvalidEmail(email);
+                    }
+                    log.error("SMTP Error Code: {}", sfe.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Async("emailExecutor")
+    protected void sendEmailVerificationMessage(String toEmail, String token) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
         message.setFrom(EMAIL_ID);
-        message.setTo(toEmail);
+        message.setRecipients(TO, toEmail);
         message.setSubject(SUBJECT);
         message.setText(AUTH_URL + token);
         mailSender.send(message);
@@ -76,5 +120,10 @@ public class EmailVerificationService {
 
     private boolean isAlreadyExists(String email) {
         return emailAuthRepository.existsByEmail(email);
+    }
+
+    @Transactional
+    protected void blockInvalidEmail(String email) {
+        memberService.completeDelete(email);
     }
 }

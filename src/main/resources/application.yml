@@ -1,3 +1,14 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
 spring:
   application:
     name=SKKUNION2024
@@ -7,6 +18,9 @@ spring:
     url: jdbc:mysql://localhost:3306/SKKUNION2024?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1234
+
+    hikari:
+      maximum-pool-size: 50
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     database: mysql
@@ -14,10 +28,10 @@ spring:
     hibernate:
       ddl-auto: none
 
-    show-sql: true
     properties:
       hibernate:
         format_sql: true
+    show-sql: true
 
 app:
   secret-key: 13h9qqxn1e-oyn4-dn-d1ibdk1whg1hkp1hvji0dvh10div10u3513iu-1ti-f11j1e-i1jx-isqss-ihqi-gi-i-

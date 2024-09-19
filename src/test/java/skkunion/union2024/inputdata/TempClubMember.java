@@ -28,14 +28,23 @@ public class TempClubMember {
     @Autowired
     ClubManageService clubManageService;
 
-//    @Test
-//    void 더미데이터_삽입_100000() {
-//        for (int i = 101; i <= 100000; i++) {
-//            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
-//            memberRepository.save(member);
-//        }
-//    }
-//
+    @Test
+    void 더미데이터_삽입_100000() {
+        for (int i = 101; i <= 100000; i++) {
+            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
+            memberRepository.save(member);
+        }
+    }
+
+    @Test
+    void 더미데이터_삽입_100000_이후() {
+        for (int i = 480001; i <= 500000; i++) {
+            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
+            memberRepository.save(member);
+        }
+    }
+
+
 //    @Test
 //    void 더미클럽_가입_100000() {
 //        for (int i = 50001; i <= 100000; i++) {
@@ -58,9 +67,9 @@ public class TempClubMember {
     private int index = 30;
     @Test
     void 더미클럽_가입_00000() {
-        for (int i = 1; i <= 3000; i++) {
+        Club findClub = clubRepository.findClubBySlug("algoGood").get();
+        for (int i = 480001; i <= 500000; i++) {
             Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-            Club findClub = clubRepository.findClubBySlug("club" + index).get();
             ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
             clubMemberRepository.save(general);
         }

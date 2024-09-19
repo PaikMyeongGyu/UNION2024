@@ -14,5 +14,8 @@ public class PermitAllConfig {
     static {
         permitAllMatchers.add("/accounts");
         permitAllMatchers.add("/accounts/*");
+        permitAllMatchers.add("/actuator");
+        permitAllMatchers.add("/actuator/*");
+        permitAllMatchers.add("/test");
     }
 }
