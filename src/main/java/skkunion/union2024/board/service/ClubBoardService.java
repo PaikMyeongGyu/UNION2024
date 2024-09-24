@@ -44,7 +44,7 @@ public class ClubBoardService {
         clubBoardRepository.save(clubBoard);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void likeClubBoard(Long boardId, String slug, String email) {
         ClubMember clubMember = getClubMemberWithValidation(slug, email);
         ClubBoard findClubBoard = clubBoardRepository.findById(boardId)

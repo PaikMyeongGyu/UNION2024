@@ -29,7 +29,7 @@ public class BoardController {
                                            @RequestParam("clubSlug") String clubSlug,
                                            Authentication authentication) {
         String email = authentication.getName();
-        clubBoardService.namedLockLikeClubBoard(boardId, clubSlug, email);
+        clubBoardService.likeClubBoard(boardId, clubSlug, email);
 
         return ResponseEntity.status(OK).build();
     }

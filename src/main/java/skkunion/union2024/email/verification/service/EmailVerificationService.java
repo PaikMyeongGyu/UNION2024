@@ -1,8 +1,7 @@
-package skkunion.union2024.emailVerification.service;
+package skkunion.union2024.email.verification.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import skkunion.union2024.emailVerification.domain.EmailVerification;
-import skkunion.union2024.emailVerification.domain.repository.EmailVerificationRepository;
+import skkunion.union2024.email.verification.config.EmailConfig;
+import skkunion.union2024.email.verification.domain.EmailVerification;
+import skkunion.union2024.email.verification.domain.repository.EmailVerificationRepository;
 import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.member.service.MemberService;
 
@@ -21,8 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static jakarta.mail.Message.RecipientType.TO;
-import static org.apache.commons.lang3.RandomStringUtils.*;
-import static skkunion.union2024.emailVerification.config.EmailConfig.*;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 @Slf4j
@@ -92,10 +90,10 @@ public class EmailVerificationService {
     @Async("emailExecutor")
     protected void sendEmailVerificationMessage(String toEmail, String token) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(EMAIL_ID);
+        message.setFrom(EmailConfig.EMAIL_ID);
         message.setRecipients(TO, toEmail);
-        message.setSubject(SUBJECT);
-        message.setText(AUTH_URL + token);
+        message.setSubject(EmailConfig.SUBJECT);
+        message.setText(EmailConfig.AUTH_URL + token);
         mailSender.send(message);
     }
 
