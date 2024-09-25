@@ -52,6 +52,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.0'
     // Java Mail Sender 설정
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // IMAP 설정
+    implementation 'jakarta.mail:jakarta.mail-api:2.0.1'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
     // 검증 설정
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // 액츄에이터 설정

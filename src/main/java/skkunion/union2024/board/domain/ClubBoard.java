@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
+
+import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -44,6 +47,11 @@ public class ClubBoard {
 
     @Column(nullable = false)
     private Long likes;
+
+    @Getter
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime joinedAt;
 
     public ClubBoard(String title, String content, Club club, ClubMember clubMember, String memberEmail, String nickname) {
         this.title = title;

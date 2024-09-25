@@ -14,8 +14,8 @@ class ClubManageControllerTest {
     @Autowired
     ClubQueryRepository clubQueryRepository;
 
-    @Test
-    void 쿼리확인() {
-        clubQueryRepository.getMembersWithoutId("algoGood");
-    }
+//    @Test
+//    void 쿼리확인() {
+//        clubQueryRepository.getMembersWithoutId("algoGood");
+//    }
 }

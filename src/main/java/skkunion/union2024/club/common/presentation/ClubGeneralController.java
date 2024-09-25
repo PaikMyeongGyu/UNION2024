@@ -19,7 +19,7 @@ public class ClubGeneralController {
     private final ClubGeneralService clubGeneralService;
     private final MemberService memberService;
 
-    @PostMapping("/clubs/{clubSlug}")
+    @PostMapping("/clubs/join")
     public ResponseEntity<Void> joinClub(
             @RequestBody ClubJoinRequest req,
             Authentication authentication

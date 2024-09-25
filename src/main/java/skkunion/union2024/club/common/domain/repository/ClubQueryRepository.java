@@ -28,7 +28,7 @@ public class ClubQueryRepository {
 
     private final int PAGE_SIZE = 16;
     private final JPAQueryFactory queryFactory;
-
+    private final EntityManager entityManager;
 //    @QueryHints(@QueryHint(name = "org.hibernate.comment", value = "USE INDEX (idx_club_authority)"))
 //    public List<ClubMemberDto> getMembersWithoutId(String slug) {
 //        return queryFactory
@@ -61,9 +61,6 @@ public class ClubQueryRepository {
 //                .limit(PAGE_SIZE)
 //                .fetch();
 //    }
-
-    @Autowired
-    private EntityManager entityManager;
 
     public List<ClubMemberDto> getMembersWithoutId(String slug) {
         String sql = "SELECT club_member_id, nick_name, club_authority, joined_at " +

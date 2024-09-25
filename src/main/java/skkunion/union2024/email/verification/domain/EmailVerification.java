@@ -1,4 +1,4 @@
-package skkunion.union2024.emailVerification.domain;
+package skkunion.union2024.email.verification.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

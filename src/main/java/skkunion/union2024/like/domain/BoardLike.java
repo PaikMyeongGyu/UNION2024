@@ -13,9 +13,11 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "board_like", indexes = {
-        @Index(name = "idx_board_like", columnList = "club_board_id, club_member_id")
-})
+@Table(name = "board_like",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = { "club_board_id", "club_member_id" })
+        }
+)
 public class BoardLike {
 
     @Id
