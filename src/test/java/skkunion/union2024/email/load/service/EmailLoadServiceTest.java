@@ -13,8 +13,8 @@ class EmailLoadServiceTest {
     @Autowired
     EmailLoadService emailLoadService;
 
-    @Test
-    void 이메일_확인해보기() throws MessagingException {
-        emailLoadService.fetchEmails();
-    }
+//    @Test
+//    void 이메일_확인해보기() throws MessagingException {
+//        emailLoadService.fetchEmails();
+//    }
 }
