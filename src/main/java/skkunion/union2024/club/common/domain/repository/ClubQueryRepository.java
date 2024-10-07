@@ -1,26 +1,17 @@
 package skkunion.union2024.club.common.domain.repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.persistence.QueryHint;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import skkunion.union2024.club.common.domain.ClubAuthority;
-import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.dto.response.ClubMemberDto;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static skkunion.union2024.club.common.domain.ClubAuthority.*;
-import static skkunion.union2024.club.common.domain.QClubMember.clubMember;
 
 @Repository
 @RequiredArgsConstructor

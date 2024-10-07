@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import skkunion.union2024.auth.domain.Session;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
-    Session findByEmail(String email);
+    Session findByMemberId(Long memberId);
 }

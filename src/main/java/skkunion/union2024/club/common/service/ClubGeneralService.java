@@ -55,25 +55,25 @@ public class ClubGeneralService {
     }
 
     @Transactional(readOnly = true)
-    public ClubMemberResponse findMemberBySlug(String slug, String email) {
-        Club findClub = IsMemberInClub(slug, email);
+    public ClubMemberResponse findMemberBySlug(String slug, Long memberId) {
+        Club findClub = IsMemberInClub(slug, memberId);
 
         return generateClubMemberResponse(clubQueryRepository.getMembersWithoutId(slug), findClub);
     }
 
 
     @Transactional(readOnly = true)
-    public ClubMemberResponse findMemberBySlugAndId(String slug, String email, Long clubMemberId) {
-        Club findClub = IsMemberInClub(slug, email);
+    public ClubMemberResponse findMemberBySlugAndId(String slug, Long memberId, Long clubMemberId) {
+        Club findClub = IsMemberInClub(slug, memberId);
 
         return generateClubMemberResponse(clubQueryRepository.getMembersWithId(slug, clubMemberId), findClub);
     }
 
-    private Club IsMemberInClub(String slug, String email) {
+    private Club IsMemberInClub(String slug, Long memberId) {
         Club findClub = clubRepository.findClubBySlug(slug)
                 .orElseThrow(() -> new ClubException(CLUB_NOT_FOUND));
 
-        Member findMember = memberService.findMemberBy(email).get();
+        Member findMember = memberService.findMemberById(memberId).get();
 
         clubMemberRepository.findByClubAndMember(findClub, findMember)
                 .orElseThrow(() -> new ClubException(CLUB_MEMBER_NOT_FOUND));
@@ -93,11 +93,10 @@ public class ClubGeneralService {
                                          .map(ClubMemberDto::convertToClubMemberDto)
                                          .collect(groupingBy(ClubMemberSelectDto::authority));
 
-        var response = new ClubMemberResponse(findClub.getClubName(),
-                                              findClub.getTotalMembers(),
-                                              hasNext,
-                                              nextId,
-                                              clubMembers);
-        return response;
+        return new ClubMemberResponse(findClub.getClubName(),
+                                      findClub.getTotalMembers(),
+                                      hasNext,
+                                      nextId,
+                                      clubMembers);
     }
 }

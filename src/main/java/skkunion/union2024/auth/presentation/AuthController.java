@@ -35,12 +35,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logoutMember(Authentication authentication) {
-        String email = getEmailFrom(authentication);
-        authService.blackSessionBy(email);
+        Long memberId = getMemberIdFrom(authentication);
+        authService.blackSessionBy(memberId);
         return ResponseEntity.noContent().build();
     }
 
-    private static String getEmailFrom(Authentication authentication) {
-        return authentication.getName();
+    private static Long getMemberIdFrom(Authentication authentication) {
+        return Long.parseLong(authentication.getName());
     }
 }

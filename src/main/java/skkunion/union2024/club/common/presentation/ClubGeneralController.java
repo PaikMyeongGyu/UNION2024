@@ -24,8 +24,8 @@ public class ClubGeneralController {
             @RequestBody ClubJoinRequest req,
             Authentication authentication
     ) {
-        String userEmail = authentication.getName();
-        Member findMember = memberService.findMemberBy(userEmail).get();
+        Long memberId = Long.parseLong(authentication.getName());
+        Member findMember = memberService.findMemberById(memberId).get();
 
         clubGeneralService.joinClub(req.convertToClubJoinDto(findMember));
         return ResponseEntity.status(NO_CONTENT).build();

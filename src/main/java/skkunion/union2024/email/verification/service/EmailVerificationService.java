@@ -30,7 +30,7 @@ public class EmailVerificationService {
     public static final int EXPIRED_MINUTE = 10;
     public static final int TOKEN_LENGTH = 10;
 
-    private final EmailVerificationRepository emailAuthRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
     private final MemberService memberService;
     private final JavaMailSender mailSender;
 
@@ -51,11 +51,21 @@ public class EmailVerificationService {
     }
 
     public void refreshTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
-        emailAuthRepository.refreshEmailVerificationToken(email, token, expiredTime);
+        emailVerificationRepository.refreshEmailVerificationToken(email, token, expiredTime);
+    }
+
+    @Transactional
+    public void deleteEmailAuth(String email) {
+        if (isAlreadyExists(email)) {
+            emailVerificationRepository.deleteByEmail(email);
+            return;
+        }
+
+        throw new AuthException(ACCOUNT_NOT_FOUND);
     }
 
     @Async("emailExecutor")
-    public void sendEmailVerificationMessageWithRetry(int cnt, String email, String token) {
+    public void sendEmailVerificationMessageWithRetry(int cnt, Long memberId, String email, String token) {
         if (cnt == 0) {
             log.error("This email({}) Verification is Failed", email);
             return;
@@ -67,17 +77,15 @@ public class EmailVerificationService {
             Map<Object, Exception> failedMessages = e.getFailedMessages();
             for (Map.Entry<Object, Exception> entry : failedMessages.entrySet()) {
                 Exception cause = entry.getValue();
-                if (cause instanceof MailConnectException) {
-                    // 포트 문제 timeout 문제 처리
-                    sendEmailVerificationMessageWithRetry(cnt-1, email, token);
+                if (cause instanceof MailConnectException) { // 포트 문제 timeout 문제 처리
+                    sendEmailVerificationMessageWithRetry(cnt-1, memberId, email, token);
                     log.error("retry: cnt={}", cnt);
-                }
-                else if (cause instanceof MessagingException) {
+                } else if (cause instanceof MessagingException) {
                     // 이상한 메일을 쓰면 여기로 들어옴.
                     // 대신 반송을 했을 때, 문제를 체크할 방법은 없음. --> 스케줄링을 통해 해결
                     SendFailedException sfe = (SendFailedException) cause;
                     if (sfe.getMessage().equals("Invalid Addresses")) {
-                        blockInvalidEmail(email);
+                        blockInvalidEmailByMemberId(memberId);
                     }
                     log.error("SMTP Error Code: {}", sfe.getMessage());
                 }
@@ -97,31 +105,20 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
-    @Transactional
-    public void deleteEmailAuth(String email) {
-        if (isAlreadyExists(email)) {
-            emailAuthRepository.deleteByEmail(email);
-            return;
-        }
-
-        throw new AuthException(ACCOUNT_NOT_FOUND);
-    }
-
     public EmailVerification findEmailVerificationByToken(String token) {
-        return emailAuthRepository.findByToken(token);
+        return emailVerificationRepository.findByToken(token);
     }
 
     private void createNewTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
         EmailVerification emailAuth = new EmailVerification(email, token, expiredTime);
-        emailAuthRepository.save(emailAuth);
+        emailVerificationRepository.save(emailAuth);
     }
 
     private boolean isAlreadyExists(String email) {
-        return emailAuthRepository.existsByEmail(email);
+        return emailVerificationRepository.existsByEmail(email);
     }
 
-    @Transactional
-    protected void blockInvalidEmail(String email) {
-        memberService.completeDelete(email);
+    private void blockInvalidEmailByMemberId(Long memberId) {
+        memberService.completeDelete(memberId);
     }
 }

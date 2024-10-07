@@ -40,8 +40,8 @@ public class ClubManageController {
             @RequestBody CreateClubRequest req,
             Authentication authentication
     ) {
-        String userEmail = authentication.getName();
-        Member findMember = memberService.findMemberBy(userEmail).get();
+        Long memberId = Long.parseLong(authentication.getName());
+        Member findMember = memberService.findMemberById(memberId).get();
 
         clubManageService.createClub(req.covertToCreateClubDto(findMember));
         return ResponseEntity.status(CREATED).build();
@@ -53,12 +53,12 @@ public class ClubManageController {
         @RequestParam(required = false) Long clubMemberId,
         Authentication authentication
     ) {
-        String userEmail = authentication.getName();
+        Long memberId = Long.parseLong(authentication.getName());
 
         if (clubMemberId == null) {
-            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(clubSlug, userEmail));
+            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(clubSlug, memberId));
         }
-        return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, userEmail, clubMemberId));
+        return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, memberId, clubMemberId));
     }
 
 }

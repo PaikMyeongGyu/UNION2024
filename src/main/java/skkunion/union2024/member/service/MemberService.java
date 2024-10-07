@@ -18,35 +18,41 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void join(String nickname, String email, String password) {
         memberRepository.save(new Member(nickname, email, passwordEncoder.encode(password)));
     }
 
-    public void deleteBy(String email) {
-        memberRepository.deleteByMemberEmail(email);
+    @Transactional
+    public void deleteMemberById(Long memberId) {
+        memberRepository.deleteSoftById(memberId);
     }
 
     @Transactional
-    public void completeDelete(String email) {
-        Member findMember = findMemberBy(email).orElseThrow(()
+    public void completeDelete(Long memberId) {
+        Member findMember = findMemberById(memberId).orElseThrow(()
                 -> new EmailVerificationException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
-        memberRepository.deleteMemberById(findMember.getId());
+        memberRepository.deleteCompleteById(findMember.getId());
     }
 
-    public Optional<Member> findMemberBy(String email) {
+    public Optional<Member> findMemberByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
-    public boolean memberPasswordIsMatch(Member member, String password) {
+    public Optional<Member> findMemberById(Long memberId) {
+        return memberRepository.findById(memberId);
+    }
+
+    public boolean IsPasswordMatch(Member member, String password) {
         return passwordEncoder.matches(password, member.getPassword());
     }
 
-    public boolean isMemberExistWith(String email) {
-        return memberRepository.existsByEmail(email);
+    public boolean isMemberExistWithEmail(String email) {
+        return memberRepository.existsMemberByEmail(email);
     }
 
-    public void activateMember(String email) {
+    public void activateMemberByEmail(String email) {
         memberRepository.activateMemberByEmail(email);
     }
 }
