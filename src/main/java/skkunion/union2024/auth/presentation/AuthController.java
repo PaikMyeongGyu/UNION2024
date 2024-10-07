@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.dto.TokenResponse;
 import skkunion.union2024.auth.service.AuthService;
+import skkunion.union2024.global.annotation.AuthMember;
+import skkunion.union2024.member.dto.AuthMemberDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,13 +36,11 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logoutMember(Authentication authentication) {
-        Long memberId = getMemberIdFrom(authentication);
+    public ResponseEntity<Void> logoutMember(
+            @AuthMember AuthMemberDto authMemberDto) {
+        Long memberId = authMemberDto.memberId();
         authService.blackSessionBy(memberId);
         return ResponseEntity.noContent().build();
     }
 
-    private static Long getMemberIdFrom(Authentication authentication) {
-        return Long.parseLong(authentication.getName());
-    }
 }
