@@ -16,32 +16,30 @@ import static skkunion.union2024.auth.domain.AuthState.*;
 })
 public class Authority {
 
-    private static final String GUEST_ID = "Guest";
+    private static final Long GUEST_ID = 1L;
+    private static final Authority GUEST = new Authority(GUEST_ID, AuthState.GUEST.getRole());
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "authority_id")
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String email;
+    @Column(nullable = false)
+    private Long memberId;
+
     @Column(nullable = false, length = 30)
     private String role;
 
-    public Authority(String email, String role) {
-        this.email = email;
+    public Authority(Long memberId, String role) {
+        this.memberId = memberId;
         this.role = role;
     }
 
-    public Authority Admin(String email) {
-        return new Authority(email, ADMIN.getRole());
+    public Authority Admin(Long memberId) {
+        return new Authority(memberId, ADMIN.getRole());
     }
 
-    public Authority Guest() {
-        return new Authority(GUEST_ID, GUEST.getRole());
-    }
-
-    public Authority User(String email) {
-        return new Authority(email, USER.getRole());
+    public Authority User(Long memberId) {
+        return new Authority(memberId, USER.getRole());
     }
 }

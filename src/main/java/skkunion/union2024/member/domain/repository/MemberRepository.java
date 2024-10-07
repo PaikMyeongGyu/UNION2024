@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    boolean existsByEmail(String email);
+    boolean existsMemberByEmail(String email);
 
     Optional<Member> findByEmail(String email);
 
@@ -20,9 +20,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("""
             UPDATE Member member
             SET member.status = 'DELETED'
-            WHERE member.email = :memberEmail
+            WHERE member.id = :memberId
             """)
-    void deleteByMemberEmail(@Param("memberEmail") final String memberEmail);
+    void deleteSoftById(@Param("memberId") final Long memberId);
 
     @Modifying
     @Query("""
@@ -37,5 +37,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         DELETE from Member member
         WHERE member.id = :memberId
         """)
-    void deleteMemberById(@Param("memberId") final Long memberId);
+    void deleteCompleteById(@Param("memberId") final Long memberId);
 }

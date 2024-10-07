@@ -38,7 +38,7 @@ public class ClubBoardQueryRepository {
                 .from(clubBoard)
                 .where(dynamicLtId
                         .and(clubBoard.club.slug.eq(slug)))
-                .orderBy(clubBoard.id.desc())
+                .orderBy(clubBoard.club.slug.asc(), clubBoard.id.desc())
                 .limit(PAGE_SIZE)
                 .fetch();
     }

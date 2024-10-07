@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import skkunion.union2024.board.domain.ClubBoard;
 
-import java.util.List;
-
 public interface ClubBoardRepository extends JpaRepository<ClubBoard, Long> {
 
     @Modifying

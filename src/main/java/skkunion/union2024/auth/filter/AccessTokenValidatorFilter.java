@@ -27,14 +27,13 @@ public class AccessTokenValidatorFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String accessToken = request.getHeader(authTokenContext.getAuthHeader());
-
         if (accessToken != null) {
             try {
                 Claims claims = tokenHandler.getClaims(accessToken);
-                String username = String.valueOf(claims.get("username"));
-                String authorities = String.valueOf(claims.get("authorities"));
+                String memberId = claims.get("memberId").toString();
+                String authorities = claims.get("authorities").toString();
 
-                tokenHandler.createAuthenticationContext(username, authorities);
+                tokenHandler.createAuthenticationContext(memberId, authorities);
             } catch (ExpiredJwtException e) {
                 tokenHandler.handleException(response, ACCESS_TOKEN_EXPIRED);
                 return;

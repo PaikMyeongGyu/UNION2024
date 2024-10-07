@@ -39,21 +39,19 @@ public class ClubBoardService {
 
 
     @Transactional
-    public void registerClubBoard(String slug, String email,
-                                  String title, String content) {
-        Club findClub = clubRepository.findClubBySlug(slug)
-                .orElseThrow(() -> new ClubBoardException(CLUB_NOT_FOUND));
-        ClubMember findClubMember = getClubMemberWithValidation(slug, email);
+    public void registerClubBoard(String slug, Long memberId, String title, String content) {
+        Club findClub = getClubBySlug(slug);
+        Member findMember = getMemberById(memberId);
+        ClubMember findClubMember = getClubMemberWithClubAndMember(findClub, findMember);
 
-        var clubBoard = ClubBoard.of(title, content, findClub, findClubMember, email, findClubMember.getNickName());
+        var clubBoard = ClubBoard.of(title, content, findClub, findClubMember, findMember.getEmail(), findClubMember.getNickName());
         clubBoardRepository.save(clubBoard);
     }
 
     @Transactional
-    public void likeClubBoard(Long boardId, String slug, String email) {
-        ClubMember clubMember = getClubMemberWithValidation(slug, email);
-        ClubBoard findClubBoard = clubBoardRepository.findById(boardId)
-                .orElseThrow(() -> new ClubBoardException(CLUB_BOARD_NOT_FOUND));
+    public void likeClubBoard(Long boardId, String slug, Long memberId) {
+        ClubMember clubMember = getClubMemberWithValidation(slug, memberId);
+        ClubBoard findClubBoard = getClubBoardById(boardId);
 
         Optional<BoardLike> findLike =
                 likeRepository.findLikeByClubBoardAndClubMemberId(findClubBoard, clubMember.getId());
@@ -68,8 +66,8 @@ public class ClubBoardService {
     }
 
     @Transactional(readOnly = true)
-    public ClubBoardResponse getClubBoardWithNoOffset(String slug, String email, Long boardCursorId) {
-        getClubMemberWithValidation(slug, email);
+    public ClubBoardResponse getClubBoardWithNoOffset(String slug, Long memberId, Long boardCursorId) {
+        getClubMemberWithValidation(slug, memberId);
 
         List<ClubBoardDto> clubBoardDtos = clubBoardQueryRepository.noOffsetPaging(boardCursorId, slug);
         boolean hasNext = clubBoardDtos.size() > PAGE_SIZE;
@@ -84,14 +82,31 @@ public class ClubBoardService {
         return new ClubBoardResponse(slug, size, hasNext, nextCursorId, clubBoardDtos);
     }
 
-    private ClubMember getClubMemberWithValidation(String slug, String email) {
-        Club findClub = clubRepository.findClubBySlug(slug)
-                .orElseThrow(() -> new ClubBoardException(CLUB_NOT_FOUND));
-        Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ClubBoardException(ACCOUNT_NOT_FOUND));
-        ClubMember findClubMember = clubMemberRepository.findByClubAndMember(findClub, findMember)
-                .orElseThrow(() -> new ClubBoardException(CLUB_MEMBER_NOT_FOUND));
-
-        return findClubMember;
+    private ClubMember getClubMemberWithClubAndMember(Club club, Member member) {
+        return clubMemberRepository.findByClubAndMember(club, member)
+                                   .orElseThrow(() -> new ClubBoardException(CLUB_MEMBER_NOT_FOUND));
     }
+
+    private ClubMember getClubMemberWithValidation(String slug, Long memberId) {
+        Club club = getClubBySlug(slug);
+        Member member = getMemberById(memberId);
+        return clubMemberRepository.findByClubAndMember(club, member)
+                                   .orElseThrow(() -> new ClubBoardException(CLUB_MEMBER_NOT_FOUND));
+    }
+
+    private Club getClubBySlug(String slug) {
+        return clubRepository.findClubBySlug(slug)
+                             .orElseThrow(() -> new ClubBoardException(CLUB_NOT_FOUND));
+    }
+
+    private ClubBoard getClubBoardById(Long boardId) {
+        return clubBoardRepository.findById(boardId)
+                                  .orElseThrow(() -> new ClubBoardException(CLUB_BOARD_NOT_FOUND));
+    }
+
+    private Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                               .orElseThrow(() -> new ClubBoardException(ACCOUNT_NOT_FOUND));
+    }
+
 }

@@ -24,7 +24,7 @@ public class AccountServiceTempFacade {
 
     @Transactional
     public void createAccountWithEmailVerification(String nickname, String email, String password) {
-        if (memberService.isMemberExistWith(email))
+        if (memberService.isMemberExistWithEmail(email))
             throw new EmailVerificationException(ACCOUNT_ALREADY_EXIST);
 
         memberService.join(nickname, email, password);
@@ -32,30 +32,30 @@ public class AccountServiceTempFacade {
         String token = randomAlphanumeric(TOKEN_LENGTH);
         emailVerificationService.createTemporaryEmailAuth(email, token);
         var findEmailVerification = emailVerificationService.findEmailVerificationByToken(token);
-        memberService.activateMember(findEmailVerification.getEmail());
+        memberService.activateMemberByEmail(findEmailVerification.getEmail());
         emailVerificationService.deleteEmailAuth(findEmailVerification.getEmail());
     }
 
     @Transactional
     public void deleteAccount(String email, String password) {
-        Member findMember = memberService.findMemberBy(email)
+        Member findMember = memberService.findMemberByEmail(email)
                              .orElseThrow(() -> new EmailVerificationException(ACCOUNT_NOT_FOUND));
 
         // 멤버 삭제 규칙 --> 한번 요청하고 패스워드 작성하게 할 것.
-        if (!memberService.memberPasswordIsMatch(findMember,password))
+        if (!memberService.IsPasswordMatch(findMember,password))
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
 
-        memberService.deleteBy(email);
+        memberService.deleteMemberById(findMember.getId());
     }
 
     public void resendEmailVerification(String email, String password) {
-        Member findMember = memberService.findMemberBy(email)
+        Member findMember = memberService.findMemberByEmail(email)
                             .orElseThrow(() -> new EmailVerificationException(ACCOUNT_NOT_FOUND));
 
         if (findMember.isActivated())
             throw new EmailVerificationException(INVALID_REQUEST);
 
-        if (!memberService.memberPasswordIsMatch(findMember, password))
+        if (!memberService.IsPasswordMatch(findMember, password))
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
 
         String token = randomAlphanumeric(TOKEN_LENGTH);
@@ -72,7 +72,7 @@ public class AccountServiceTempFacade {
         if (findEmailVerification.isExpired(now()))
             throw new EmailVerificationException(EMAIL_VERIFICATION_EXPIRED);
 
-        memberService.activateMember(findEmailVerification.getEmail());
+        memberService.activateMemberByEmail(findEmailVerification.getEmail());
         emailVerificationService.deleteEmailAuth(findEmailVerification.getEmail());
     }
 }

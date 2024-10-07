@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import skkunion.union2024.board.dto.response.ClubBoardResponse;
 import skkunion.union2024.board.presentation.dto.request.RegisterBoardRequest;
 import skkunion.union2024.board.service.ClubBoardService;
+import skkunion.union2024.global.annotation.AuthMember;
+import skkunion.union2024.member.dto.AuthMemberDto;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -20,10 +22,9 @@ public class BoardController {
     @PostMapping("/boards")
     public ResponseEntity<Void> registerBoard(
             @RequestBody RegisterBoardRequest req,
-            Authentication authentication) {
+            @AuthMember AuthMemberDto authMemberDto) {
 
-        String email = authentication.getName();
-        clubBoardService.registerClubBoard(req.clubSlug(), email, req.title(), req.content());
+        clubBoardService.registerClubBoard(req.clubSlug(), authMemberDto.memberId(), req.title(), req.content());
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -31,11 +32,9 @@ public class BoardController {
     public ResponseEntity<Void> likeAction(
             @RequestParam("boardId") Long boardId,
             @RequestParam("clubSlug") String clubSlug,
-            Authentication authentication) {
+            @AuthMember AuthMemberDto authMemberDto) {
 
-        String email = authentication.getName();
-        clubBoardService.likeClubBoard(boardId, clubSlug, email);
-
+        clubBoardService.likeClubBoard(boardId, clubSlug, authMemberDto.memberId());
         return ResponseEntity.status(OK).build();
     }
 
@@ -43,10 +42,10 @@ public class BoardController {
     public ResponseEntity<ClubBoardResponse> getClubBoard(
             @RequestParam("clubSlug") String clubSlug,
             @RequestParam(value = "boardId", required = false) Long boardId,
-            Authentication authentication) {
+            @AuthMember AuthMemberDto authMemberDto) {
 
-        String email = authentication.getName();
-        ClubBoardResponse clubBoards = clubBoardService.getClubBoardWithNoOffset(clubSlug, email, boardId);
+        ClubBoardResponse clubBoards
+                = clubBoardService.getClubBoardWithNoOffset(clubSlug, authMemberDto.memberId(), boardId);
         return ResponseEntity.status(OK).body(clubBoards);
     }
 }

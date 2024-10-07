@@ -13,7 +13,9 @@ import skkunion.union2024.club.dto.response.ClubMemberDto;
 import skkunion.union2024.club.dto.response.ClubMemberSelectDto;
 import skkunion.union2024.club.dto.response.ClubMemberResponse;
 import skkunion.union2024.club.manage.service.ClubManageService;
+import skkunion.union2024.global.annotation.AuthMember;
 import skkunion.union2024.member.domain.Member;
+import skkunion.union2024.member.dto.AuthMemberDto;
 import skkunion.union2024.member.service.MemberService;
 
 import java.util.Collections;
@@ -38,10 +40,9 @@ public class ClubManageController {
     @PostMapping("/clubs/create")
     public ResponseEntity<Void> createClub(
             @RequestBody CreateClubRequest req,
-            Authentication authentication
+            @AuthMember AuthMemberDto authMember
     ) {
-        String userEmail = authentication.getName();
-        Member findMember = memberService.findMemberBy(userEmail).get();
+        Member findMember = memberService.findMemberById(authMember.memberId()).get();
 
         clubManageService.createClub(req.covertToCreateClubDto(findMember));
         return ResponseEntity.status(CREATED).build();
@@ -51,14 +52,12 @@ public class ClubManageController {
     public ResponseEntity<ClubMemberResponse> showMembersInClub(
         @RequestParam String clubSlug,
         @RequestParam(required = false) Long clubMemberId,
-        Authentication authentication
+        @AuthMember AuthMemberDto authMember
     ) {
-        String userEmail = authentication.getName();
-
         if (clubMemberId == null) {
-            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(clubSlug, userEmail));
+            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(clubSlug, authMember.memberId()));
         }
-        return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, userEmail, clubMemberId));
+        return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, authMember.memberId(), clubMemberId));
     }
 
 }

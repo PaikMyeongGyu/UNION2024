@@ -1,7 +1,6 @@
 package skkunion.union2024.auth;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Component;
 import skkunion.union2024.auth.domain.Authority;
 import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.global.exception.AuthException;
-import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
-import skkunion.union2024.member.domain.MemberState;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
 import java.util.ArrayList;
@@ -26,7 +23,6 @@ import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 import static skkunion.union2024.member.domain.MemberState.ACTIVE;
 
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UnionAuthenticationProvider implements AuthenticationProvider {
@@ -43,13 +39,12 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
         Member member = memberRepository.findByEmail(email)
                                     .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
 
-        log.info("동작하엿습니다.");
         if (member.getStatus() != ACTIVE)
             throw new AuthException(ACCOUNT_NOT_ACTIVE);
         if (!passwordEncoder.matches(password, member.getPassword()))
             throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
 
-        List<Authority> findAuthorities = authorityRepository.findAllByEmail(email);
+        List<Authority> findAuthorities = authorityRepository.findAllByMemberId(member.getId());
         return new UsernamePasswordAuthenticationToken(email, password, getGrantedAuthorities(findAuthorities));
     }
 

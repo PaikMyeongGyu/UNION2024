@@ -20,9 +20,7 @@ import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.auth.domain.repository.SessionRepository;
 import skkunion.union2024.auth.util.TokenHandler;
 import skkunion.union2024.global.exception.AuthException;
-import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
-import skkunion.union2024.member.domain.MemberState;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
 import java.io.IOException;
@@ -51,20 +49,20 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
 
             Claims claims = tokenHandler.getClaims(refreshToken);
 
-            String email = String.valueOf(claims.get("username"));
-            Session findSession = sessionRepository.findByEmail(email);
+            Long memberId = Long.parseLong(claims.get("memberId").toString());
+            Session findSession = sessionRepository.findByMemberId(memberId);
             if (findSession == null)
                 throw new BadCredentialsException("다시 로그인해주세요.");
 
             isBlackList(findSession);
             isCurrentToken(findSession, refreshToken);
 
-            Member findMember = memberRepository.findByEmail(email)
+            Member findMember = memberRepository.findById(memberId)
                                                 .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
 
             // 삭제상태인지 확인
             if (findMember.getStatus() == ACTIVE) {
-                List<Authority> findAuthorities = authorityRepository.findAllByEmail(email);
+                List<Authority> findAuthorities = authorityRepository.findAllByMemberId(memberId);
                 var auth = new UsernamePasswordAuthenticationToken(findMember.getEmail(), null,
                                 AuthorityUtils.commaSeparatedStringToAuthorityList(findAuthorities.toString()));
                 SecurityContextHolder.getContext().setAuthentication(auth);

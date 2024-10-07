@@ -32,7 +32,7 @@ class ClubBoardServiceTest {
 
     @Test
     void 클럽_게시글_작성() {
-        Club club = clubRepository.findClubBySlug("algoGood").get();
+        Club club = clubRepository.findClubBySlug("aaaaaa").get();
         Member member = memberRepository.findByEmail("qoraudrb@gmail.com").get();
         ClubMember clubMember = clubMemberRepository.findByClubAndMember(club, member).get();
 

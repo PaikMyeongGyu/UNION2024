@@ -16,27 +16,26 @@ public class AuthService {
 
     @Transactional
     public void storeRefreshToken(String refreshToken) {
-        String email = extractEmailFrom(refreshToken);
-        Session findSession = sessionRepository.findByEmail(email);
+        Long memberId = extractMemberIdFrom(refreshToken);
+        Session findSession = sessionRepository.findByMemberId(memberId);
 
         if (findSession == null)
-            sessionRepository.save(new Session(refreshToken, email));
+            sessionRepository.save(Session.of(memberId, refreshToken));
         else
             findSession.updateRefreshToken(refreshToken);
     }
 
     @Transactional
-    public void blackSessionBy(String email) {
-        Session findSession = sessionRepository.findByEmail(email);
-
+    public void blackSessionBy(Long memberId) {
+        Session findSession = sessionRepository.findByMemberId(memberId);
         if (findSession == null)
             return;
 
         findSession.blackSession();
     }
 
-    private String extractEmailFrom(String refreshToken) {
-        return tokenHandler.getClaims(refreshToken).get("username").toString();
+    private Long extractMemberIdFrom(String refreshToken) {
+        return Long.parseLong(tokenHandler.getClaims(refreshToken).get("memberId").toString());
     }
 
 }

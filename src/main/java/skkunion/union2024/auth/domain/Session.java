@@ -23,17 +23,22 @@ public class Session {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 40)
+    private Long memberId;
+
     @Column(nullable = false)
     private String refreshToken;
 
-    @Column(nullable = false, length = 40)
-    private String email;
     private Boolean isBlackList;
 
-    public Session(String refreshToken, String email) {
+    public Session(Long memberId, String refreshToken) {
         this.refreshToken = refreshToken;
-        this.email = email;
+        this.memberId = memberId;
         this.isBlackList = FALSE;
+    }
+
+    public static Session of( Long memberId, String refreshToken) {
+        return new Session(memberId, refreshToken);
     }
 
     public void updateRefreshToken(String refreshToken) {

@@ -1,27 +1,12 @@
 package skkunion.union2024.auth.domain;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import skkunion.union2024.auth.dto.TokenResponse;
-import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
-import skkunion.union2024.global.exception.response.ErrorResponse;
 
 import javax.crypto.SecretKey;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static io.jsonwebtoken.lang.Strings.UTF_8;
 
