@@ -20,7 +20,7 @@ public class AccountController {
     /**
      * 편리성을 위해 임시로 만든 코드로 제거해줘야 합니다.
      */
-    private final AccountServiceTempFacade accountServiceTempFacade;
+    private final AccountServiceFacade accountServiceTempFacade;
 
     @PostMapping("/accounts")
     public ResponseEntity<CreateAccountResponse> createAccount(
