@@ -15,12 +15,12 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/SKKUNION2024?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/SKKUNION2024?serverTimezone=UTC&characterEncoding=UTF-8&socketTimeout=2000
     username: root
     password: 1234
 
     hikari:
-      maximum-pool-size: 50
+      connection-timeout: 3000
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     database: mysql
@@ -36,3 +36,5 @@ spring:
 app:
   secret-key: 13h9qqxn1e-oyn4-dn-d1ibdk1whg1hkp1hvji0dvh10div10u3513iu-1ti-f11j1e-i1jx-isqss-ihqi-gi-i-
   auth-header: Authorization
+  email: ${APP_EMAIL}
+  password: ${APP_PASSWORD}

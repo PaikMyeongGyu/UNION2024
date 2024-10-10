@@ -11,14 +11,13 @@ import skkunion.union2024.board.dto.ClubBoardDto;
 import java.util.List;
 
 import static skkunion.union2024.board.domain.QClubBoard.clubBoard;
+import static skkunion.union2024.global.util.PageParameterUtils.PAGE_SIZE;
 
 @Repository
 @RequiredArgsConstructor
 public class ClubBoardQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
-    private final int PAGE_SIZE = 16;
 
     public List<ClubBoardDto> noOffsetPaging(Long clubBoardId, String slug) {
 
@@ -39,7 +38,7 @@ public class ClubBoardQueryRepository {
                 .where(dynamicLtId
                         .and(clubBoard.club.slug.eq(slug)))
                 .orderBy(clubBoard.club.slug.asc(), clubBoard.id.desc())
-                .limit(PAGE_SIZE)
+                .limit(PAGE_SIZE + 1)
                 .fetch();
     }
 }

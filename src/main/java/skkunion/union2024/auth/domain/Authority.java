@@ -12,7 +12,7 @@ import static skkunion.union2024.auth.domain.AuthState.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "authority", indexes = {
-        @Index(name = "idx_authority_email", columnList = "email")
+        @Index(name = "idx_authority_member_id", columnList = "memberId")
 })
 public class Authority {
 

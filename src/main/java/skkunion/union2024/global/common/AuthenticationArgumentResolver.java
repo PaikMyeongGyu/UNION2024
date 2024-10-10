@@ -11,6 +11,7 @@ import skkunion.union2024.global.annotation.AuthMember;
 import skkunion.union2024.member.dto.AuthMemberDto;
 
 public class AuthenticationArgumentResolver implements HandlerMethodArgumentResolver {
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthMember.class);

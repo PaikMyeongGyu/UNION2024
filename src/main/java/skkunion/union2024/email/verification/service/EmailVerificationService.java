@@ -6,6 +6,8 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.angus.mail.util.MailConnectException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -27,12 +29,18 @@ import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.AC
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
-    public static final int EXPIRED_MINUTE = 10;
-    public static final int TOKEN_LENGTH = 10;
+
+    @Value("${app.email}")
+    private String EMAIL_ID;
 
     private final EmailVerificationRepository emailVerificationRepository;
     private final MemberService memberService;
     private final JavaMailSender mailSender;
+
+    public static final int EXPIRED_MINUTE = 10;
+    public static final int TOKEN_LENGTH = 10;
+
+
 
     @Transactional
     public void createTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
@@ -98,10 +106,10 @@ public class EmailVerificationService {
     @Async("emailExecutor")
     protected void sendEmailVerificationMessage(String toEmail, String token) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(EmailConfig.EMAIL_ID);
+        message.setFrom(EMAIL_ID);
         message.setRecipients(TO, toEmail);
         message.setSubject(EmailConfig.SUBJECT);
-        message.setText(EmailConfig.AUTH_URL + token);
+        message.setText(generateMessage(EmailConfig.AUTH_URL + token));
         mailSender.send(message);
     }
 
@@ -120,5 +128,12 @@ public class EmailVerificationService {
 
     private void blockInvalidEmailByMemberId(Long memberId) {
         memberService.completeDelete(memberId);
+    }
+
+    private String generateMessage(String token) {
+        String message = "<h1>Email Verification</h1>";
+        message += "<p>Click the button below to verify your email:</p>";
+        message += "<a href=\"" + token + "\" style=\"display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #4CAF50; text-align: center; text-decoration: none; border-radius: 5px;\">Verify Email</a>";
+        return message;
     }
 }

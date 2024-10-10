@@ -13,9 +13,9 @@ import static java.lang.Boolean.TRUE;
 @NoArgsConstructor
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint( columnNames = {"email"})
+                @UniqueConstraint( columnNames = {"memberId"})
         },
-        indexes = @Index(name = "idx_session_email", columnList = "email")
+        indexes = @Index(name = "idx_session_member_id", columnList = "memberId")
 )
 public class Session {
 

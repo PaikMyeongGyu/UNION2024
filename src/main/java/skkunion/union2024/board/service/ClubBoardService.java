@@ -13,7 +13,9 @@ import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.common.domain.repository.ClubMemberRepository;
 import skkunion.union2024.club.common.domain.repository.ClubRepository;
+import skkunion.union2024.club.dto.response.ClubMemberDto;
 import skkunion.union2024.global.exception.ClubBoardException;
+import skkunion.union2024.global.util.PageParameterUtils;
 import skkunion.union2024.like.domain.BoardLike;
 import skkunion.union2024.like.domain.repository.LikeRepository;
 import skkunion.union2024.member.domain.Member;
@@ -24,12 +26,11 @@ import java.util.Optional;
 
 import static java.lang.Math.max;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.global.util.PageParameterUtils.*;
 
 @Service
 @RequiredArgsConstructor
 public class ClubBoardService {
-
-    private final Integer PAGE_SIZE = 15;
     private final ClubMemberRepository clubMemberRepository;
     private final ClubBoardRepository clubBoardRepository;
     private final LikeRepository likeRepository;
@@ -70,13 +71,13 @@ public class ClubBoardService {
         getClubMemberWithValidation(slug, memberId);
 
         List<ClubBoardDto> clubBoardDtos = clubBoardQueryRepository.noOffsetPaging(boardCursorId, slug);
-        boolean hasNext = clubBoardDtos.size() > PAGE_SIZE;
-        int size = max(clubBoardDtos.size() - 1, 0);
-        Long nextCursorId = null;
+        boolean hasNext = hasNext(clubBoardDtos);
+        int size = getSize(clubBoardDtos);
 
+        Long nextCursorId = null;
         if (hasNext) {
-            clubBoardDtos.remove(clubBoardDtos.size() - 1);
-            nextCursorId = clubBoardDtos.get(size - 1).getId();
+            clubBoardDtos.remove(size);
+            nextCursorId = getLongCursor(clubBoardDtos, ClubBoardDto::getId);
         }
 
         return new ClubBoardResponse(slug, size, hasNext, nextCursorId, clubBoardDtos);
