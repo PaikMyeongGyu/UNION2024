@@ -28,7 +28,7 @@ public class SecurityConfig {
                                             TokenHandler tokenHandler, AuthorityRepository authorityRepository) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .httpBasic(Customizer.withDefaults())
-                .addFilterAfter(new AuthTokenGenerateFilter(authTokenContext, tokenHandler), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthTokenGenerateFilter(authTokenContext, tokenHandler, memberRepository), BasicAuthenticationFilter.class)
                 .addFilterBefore(new AccessTokenValidatorFilter(authTokenContext, tokenHandler), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RefreshTokenValidatorFilter(authTokenContext, tokenHandler, memberRepository,
                         sessionRepository, authorityRepository), AccessTokenValidatorFilter.class)

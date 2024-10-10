@@ -11,28 +11,40 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.util.TokenHandler;
+import skkunion.union2024.global.exception.AuthException;
+import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
+import skkunion.union2024.member.domain.Member;
+import skkunion.union2024.member.domain.repository.MemberRepository;
 
 import java.io.IOException;
 import java.util.*;
 
 import static skkunion.union2024.auth.domain.AuthTokenContext.ACCESS_TOKEN_EXPIRATION_TIME;
 import static skkunion.union2024.auth.domain.AuthTokenContext.REFRESH_TOKEN_EXPIRATION_TIME;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class AuthTokenGenerateFilter extends OncePerRequestFilter {
 
     private final AuthTokenContext tokenContext;
     private final TokenHandler tokenHandler;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String path = request.getRequestURI();
 
         if (authentication != null) {
-            String accessToken = generateAccessToken(authentication);
-            String refreshToken = generateRefreshToken(authentication);
-            tokenContext.storeCurrentToken(accessToken, refreshToken);
+            if (path.equals("/login")) {
+                String accessToken = generateAccessTokenLogin(authentication);
+                String refreshToken = generateRefreshTokenLogin(authentication);
+                tokenContext.storeCurrentToken(accessToken, refreshToken);
+            } else {
+                String accessToken = generateAccessTokenReissue(authentication);
+                String refreshToken = generateRefreshTokenReissue(authentication);
+                tokenContext.storeCurrentToken(accessToken, refreshToken);
+            }
         }
 
         filterChain.doFilter(request, response);
@@ -47,18 +59,41 @@ public class AuthTokenGenerateFilter extends OncePerRequestFilter {
         return !(path.equals("/login") || path.equals("/reissue"));
     }
 
-    private String generateAccessToken(Authentication authentication) {
+    private String generateAccessTokenLogin(Authentication authentication) {
+        Member findMember = memberRepository.findByEmail(authentication.getName())
+                                            .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+
         return Jwts.builder()
-                .claim("username", authentication.getName())
+                .claim("memberId", findMember.getId())
                 .claim("authorities", tokenHandler.mergeAuthorities(authentication.getAuthorities()))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + ACCESS_TOKEN_EXPIRATION_TIME))
                 .signWith(tokenContext.getSecretKey()).compact();
     }
 
-    private String generateRefreshToken(Authentication authentication) {
+    private String generateAccessTokenReissue(Authentication authentication) {
         return Jwts.builder()
-                .claim("username", authentication.getName())
+                .claim("memberId", authentication.getName())
+                .claim("authorities", tokenHandler.mergeAuthorities(authentication.getAuthorities()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + ACCESS_TOKEN_EXPIRATION_TIME))
+                .signWith(tokenContext.getSecretKey()).compact();
+    }
+
+    private String generateRefreshTokenLogin(Authentication authentication) {
+        Member findMember = memberRepository.findByEmail(authentication.getName())
+                                            .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+
+        return Jwts.builder()
+                .claim("memberId", findMember.getId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + REFRESH_TOKEN_EXPIRATION_TIME))
+                .signWith(tokenContext.getSecretKey()).compact();
+    }
+
+    private String generateRefreshTokenReissue(Authentication authentication) {
+        return Jwts.builder()
+                .claim("memberId", authentication.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(tokenContext.getSecretKey()).compact();
