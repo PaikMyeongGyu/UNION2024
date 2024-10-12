@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -61,6 +62,7 @@ public class ClubBoard {
     @Column(updatable = false)
     private LocalDateTime joinedAt;
 
+    @Builder
     public ClubBoard(String title, String content, Club club, ClubMember clubMember, String memberEmail, String nickname) {
         this.title = title;
         this.content = content;

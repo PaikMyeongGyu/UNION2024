@@ -36,14 +36,19 @@ public class ClubBoardService {
     private final MemberRepository memberRepository;
     private final ClubBoardQueryRepository clubBoardQueryRepository;
 
-
     @Transactional
     public void registerClubBoard(String slug, Long memberId, String title, String content) {
         Club findClub = getClubBySlug(slug);
         Member findMember = getMemberById(memberId);
         ClubMember findClubMember = getClubMemberWithClubAndMember(findClub, findMember);
 
-        var clubBoard = ClubBoard.of(title, content, findClub, findClubMember, findMember.getEmail(), findClubMember.getNickName());
+        var clubBoard = ClubBoard.builder()
+                                 .title(title)
+                                 .content(content)
+                                 .club(findClub)
+                                 .clubMember(findClubMember)
+                                 .memberEmail(findMember.getEmail())
+                                 .nickname(findClubMember.getNickName()).build();
         clubBoardRepository.save(clubBoard);
     }
 
@@ -77,7 +82,6 @@ public class ClubBoardService {
             clubBoardDtos.remove(size);
             nextCursorId = getLongCursor(clubBoardDtos, ClubBoardDto::getId);
         }
-
         return new ClubBoardResponse(slug, size, hasNext, nextCursorId, clubBoardDtos);
     }
 

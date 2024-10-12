@@ -35,20 +35,6 @@ class ClubBoardServiceTest {
 
     @Test
     void 클럽_게시글_작성() {
-        Club club = clubRepository.findClubBySlug("algoGood").get();
-        Member member = memberRepository.findByEmail("skkunion2024@gmail.com").get();
-        ClubMember clubMember = clubMemberRepository.findByClubAndMember(club, member).get();
-
-        for (int i = 1; i < 1000; i++) {
-            for (int j = 1; j <= 10000; j++) {
-                String title = "테스트" + i + j;
-                String content = "테스트 내용" + i + j;
-                clubBoardRepository.save(ClubBoard.of(title, content, club, clubMember, "skkunion2024@gmail.com", clubMember.getNickName()));
-            }
-            em.flush();
-        }
-
-
     }
 
 }
