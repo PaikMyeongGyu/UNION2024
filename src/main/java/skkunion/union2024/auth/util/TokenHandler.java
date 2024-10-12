@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import skkunion.union2024.auth.domain.AuthTokenContext;
@@ -19,6 +18,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.springframework.security.core.authority.AuthorityUtils.commaSeparatedStringToAuthorityList;
 
 @Component
 @RequiredArgsConstructor
@@ -36,21 +37,22 @@ public class TokenHandler {
 
     public void createAuthenticationContext(String username, String authorities) {
         Authentication auth = new UsernamePasswordAuthenticationToken(username, null,
-                AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+                commaSeparatedStringToAuthorityList(authorities));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     public Claims getClaims(String jwtAccessToken) {
         return Jwts.parserBuilder()
-                .setSigningKey(authTokenContext.getSecretKey()).build()
-                .parseClaimsJws(jwtAccessToken).getBody();
+                   .setSigningKey(authTokenContext.getSecretKey()).build()
+                   .parseClaimsJws(jwtAccessToken).getBody();
     }
 
     public void handleException(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
         response.setStatus(exceptionCode.getCode());
         response.setContentType("application/json");
 
-        objectMapper.writeValue(response.getWriter(),
+        objectMapper.writeValue(
+                response.getWriter(),
                 new ErrorResponse(exceptionCode.getCode(), exceptionCode.getMessage()));
     }
 }

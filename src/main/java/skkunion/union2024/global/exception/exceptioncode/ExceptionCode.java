@@ -33,6 +33,7 @@ public enum ExceptionCode {
 
     // 3000번 대(보드 관련 코드)
     CLUB_BOARD_NOT_FOUND(NOT_FOUND, 3001, "게시글이 존재하지 않습니다.");
+
     private final HttpStatus httpStatus;
     private final int code;
     private final String message;

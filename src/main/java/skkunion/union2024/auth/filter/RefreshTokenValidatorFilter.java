@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
+import static org.springframework.security.core.authority.AuthorityUtils.*;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 import static skkunion.union2024.member.domain.MemberState.ACTIVE;
 
@@ -43,33 +44,15 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String refreshToken = request.getHeader(authTokenContext.getAuthHeader());
-            if (refreshToken == null)
-                throw new BadCredentialsException("다시 로그인해주세요.");
+            String refreshToken = getRefreshTokenFrom(request);
+            Long memberId = getMemberIdFrom(refreshToken);
 
-            Claims claims = tokenHandler.getClaims(refreshToken);
-
-            Long memberId = Long.parseLong(claims.get("memberId").toString());
-            Session findSession = sessionRepository.findByMemberId(memberId);
-            if (findSession == null)
-                throw new BadCredentialsException("다시 로그인해주세요.");
-
+            Session findSession = getSessionBy(memberId);
             isBlackList(findSession);
             isCurrentToken(findSession, refreshToken);
 
-            Member findMember = memberRepository.findById(memberId)
-                                                .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
-
-            // 삭제상태인지 확인
-            if (findMember.getStatus() == ACTIVE) {
-                List<Authority> findAuthorities = authorityRepository.findAllByMemberId(memberId);
-                var auth = new UsernamePasswordAuthenticationToken(findMember.getEmail(), null,
-                                AuthorityUtils.commaSeparatedStringToAuthorityList(findAuthorities.toString()));
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } else {
-                throw new AuthException(ACCOUNT_NOT_FOUND);
-            }
-
+            Member findMember = findMemberBy(memberId);
+            setSecurityContextWithActiveMember(findMember, memberId);
         } catch (ExpiredJwtException | BadCredentialsException e) {
             tokenHandler.handleException(response, REQUEST_LOGIN);
             return;
@@ -78,9 +61,18 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
             return;
         } catch (AuthException e) {
             tokenHandler.handleException(response, ACCOUNT_NOT_FOUND);
+            return;
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setSecurityContextWithActiveMember(Member findMember, Long memberId) {
+        if (findMember.getStatus() == ACTIVE) {
+            setSecurityContextBy(memberId, findMember);
+        } else {
+            throw new AuthException(ACCOUNT_NOT_FOUND);
+        }
     }
 
     // 재발급 상황에서만 사용함.
@@ -97,6 +89,42 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
     private static void isBlackList(Session findSession) {
         if (findSession.getIsBlackList() == TRUE)
             throw new BadCredentialsException("다시 로그인 해주세요.");
+    }
+
+    private Member findMemberBy(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+    }
+
+    private Session getSessionBy(Long memberId) {
+        Session findSession = sessionRepository.findByMemberId(memberId);
+        if (findSession == null) {
+            throw new BadCredentialsException("다시 로그인해주세요.");
+        }
+        return findSession;
+    }
+
+    private Long getMemberIdFrom(String refreshToken) {
+        Claims claims = tokenHandler.getClaims(refreshToken);
+        return Long.parseLong(claims.get("memberId").toString());
+    }
+
+    private String getRefreshTokenFrom(HttpServletRequest request) {
+        String refreshToken = request.getHeader(authTokenContext.getAuthHeader());
+        if (refreshToken == null) {
+            throw new BadCredentialsException("다시 로그인해주세요.");
+        }
+        return refreshToken;
+    }
+
+    private void setSecurityContextBy(Long memberId, Member findMember) {
+        List<Authority> findAuthorities = authorityRepository.findAllByMemberId(memberId);
+
+        var auth = new UsernamePasswordAuthenticationToken(
+                            findMember.getEmail(),
+                  null,
+                            commaSeparatedStringToAuthorityList(findAuthorities.toString()));
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
 }

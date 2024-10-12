@@ -34,17 +34,12 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        Member member = memberRepository.findByEmail(email)
-                                    .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+        String email = getEmailFrom(authentication);
+        String password = getPasswordFrom(authentication);
+        Member member = getMemberBy(email);
+        memberValidation(member, password);
 
-        if (member.getStatus() != ACTIVE)
-            throw new AuthException(ACCOUNT_NOT_ACTIVE);
-        if (!passwordEncoder.matches(password, member.getPassword()))
-            throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
-
-        List<Authority> findAuthorities = authorityRepository.findAllByMemberId(member.getId());
+        List<Authority> findAuthorities = getAuthoritiesByMemberId(member.getId());
         return new UsernamePasswordAuthenticationToken(email, password, getGrantedAuthorities(findAuthorities));
     }
 
@@ -59,5 +54,29 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
             grantedAuthorities.add(new SimpleGrantedAuthority(authority.getRole()));
 
         return grantedAuthorities;
+    }
+
+    private void memberValidation(Member member, String password) {
+        if (member.getStatus() != ACTIVE)
+            throw new AuthException(ACCOUNT_NOT_ACTIVE);
+        if (!passwordEncoder.matches(password, member.getPassword()))
+            throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
+    }
+
+    private static String getEmailFrom(Authentication authentication) {
+        return authentication.getName();
+    }
+
+    private static String getPasswordFrom(Authentication authentication) {
+        return authentication.getCredentials().toString();
+    }
+
+    private Member getMemberBy(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+    }
+
+    private List<Authority> getAuthoritiesByMemberId(Long memberId) {
+        return authorityRepository.findAllByMemberId(memberId);
     }
 }
