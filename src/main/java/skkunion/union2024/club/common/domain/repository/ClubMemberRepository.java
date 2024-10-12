@@ -10,5 +10,5 @@ import skkunion.union2024.member.domain.Member;
 
 public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
     Optional<ClubMember> findByClubAndMember(Club club, Member member);
-    Optional<ClubMember> findByNickName(String nickName);
+    Optional<ClubMember> findByClubAndNickName(Club club, String nickName);
 }

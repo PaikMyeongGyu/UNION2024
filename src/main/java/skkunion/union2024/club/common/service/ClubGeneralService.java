@@ -4,6 +4,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
+import static org.springframework.data.repository.util.ClassUtils.ifPresent;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 
 import java.util.Collections;
@@ -47,7 +48,7 @@ public class ClubGeneralService {
                 .orElseThrow(() -> new ClubException(CLUB_NOT_FOUND));
         clubMemberRepository.findByClubAndMember(findClub,req.member())
                 .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_ALREADY_EXIST); });
-        clubMemberRepository.findByNickName(req.nickName())
+        clubMemberRepository.findByClubAndNickName(findClub, req.nickName())
                 .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_DUPLICATED_NICKNAME); });
 
         clubRepository.updateTotalMembersBySlug(req.clubSlug());

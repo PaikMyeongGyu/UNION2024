@@ -37,7 +37,7 @@ public class Club {
     private String slug;
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
-    private List<ClubMember> memberClubs = new ArrayList<>();
+    private List<ClubMember> clubMembers = new ArrayList<>();
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();

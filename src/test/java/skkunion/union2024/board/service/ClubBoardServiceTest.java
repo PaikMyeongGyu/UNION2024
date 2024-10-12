@@ -35,6 +35,8 @@ class ClubBoardServiceTest {
 
     @Test
     void 클럽_게시글_작성() {
+
+
     }
 
 }

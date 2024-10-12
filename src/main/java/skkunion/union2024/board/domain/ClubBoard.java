@@ -29,11 +29,12 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 public class ClubBoard {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
     @Getter
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "club_board_id")
     private Long id;
 
+    @Getter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
@@ -71,9 +72,5 @@ public class ClubBoard {
         this.memberEmail = memberEmail;
         this.nickname = nickname;
         this.likes = 0L;
-    }
-
-    public static ClubBoard of(String title,String content, Club club, ClubMember clubMember, String memberEmail, String writerName) {
-        return new ClubBoard(title, content, club, clubMember, memberEmail, writerName);
     }
 }
