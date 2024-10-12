@@ -1,6 +1,11 @@
 package skkunion.union2024.auth;
 
-import lombok.RequiredArgsConstructor;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.member.domain.MemberState.ACTIVE;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,18 +15,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import skkunion.union2024.auth.domain.Authority;
 import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
-import static skkunion.union2024.member.domain.MemberState.ACTIVE;
-
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

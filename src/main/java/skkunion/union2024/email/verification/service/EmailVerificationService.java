@@ -1,29 +1,31 @@
 package skkunion.union2024.email.verification.service;
 
+import static jakarta.mail.Message.RecipientType.TO;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.email.verification.config.EmailConfig;
 import skkunion.union2024.email.verification.domain.EmailVerification;
 import skkunion.union2024.email.verification.domain.repository.EmailVerificationRepository;
 import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.member.service.MemberService;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
-import static jakarta.mail.Message.RecipientType.TO;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -39,8 +41,6 @@ public class EmailVerificationService {
 
     public static final int EXPIRED_MINUTE = 10;
     public static final int TOKEN_LENGTH = 10;
-
-
 
     @Transactional
     public void createTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {

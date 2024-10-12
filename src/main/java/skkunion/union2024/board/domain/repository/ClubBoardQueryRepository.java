@@ -1,17 +1,18 @@
 package skkunion.union2024.board.domain.repository;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import skkunion.union2024.board.dto.ClubBoardDto;
+import static skkunion.union2024.board.domain.QClubBoard.clubBoard;
+import static skkunion.union2024.global.util.PageParameterUtils.PAGE_SIZE;
 
 import java.util.List;
 
-import static skkunion.union2024.board.domain.QClubBoard.clubBoard;
-import static skkunion.union2024.global.util.PageParameterUtils.PAGE_SIZE;
+import org.springframework.stereotype.Repository;
+import skkunion.union2024.board.dto.ClubBoardDto;
+
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+
 
 @Repository
 @RequiredArgsConstructor

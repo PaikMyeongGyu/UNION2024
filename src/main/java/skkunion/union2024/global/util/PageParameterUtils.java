@@ -1,9 +1,9 @@
 package skkunion.union2024.global.util;
 
+import static java.lang.Math.max;
+
 import java.util.List;
 import java.util.function.Function;
-
-import static java.lang.Math.max;
 
 public class PageParameterUtils<T, R> {
 

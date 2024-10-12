@@ -1,8 +1,18 @@
 package skkunion.union2024.club.common.service;
 
-import lombok.RequiredArgsConstructor;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubAuthority;
 import skkunion.union2024.club.common.domain.ClubMember;
@@ -17,15 +27,7 @@ import skkunion.union2024.global.exception.ClubException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.service.MemberService;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.groupingBy;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

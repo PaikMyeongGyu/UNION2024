@@ -1,10 +1,12 @@
 package skkunion.union2024.club.common.presentation;
 
-import lombok.RequiredArgsConstructor;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import skkunion.union2024.club.common.service.ClubGeneralService;
 import skkunion.union2024.club.dto.request.ClubJoinRequest;
 import skkunion.union2024.global.annotation.AuthMember;
@@ -12,7 +14,7 @@ import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.dto.AuthMemberDto;
 import skkunion.union2024.member.service.MemberService;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

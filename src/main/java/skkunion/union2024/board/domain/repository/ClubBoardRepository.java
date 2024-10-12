@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.board.domain.ClubBoard;
 
 public interface ClubBoardRepository extends JpaRepository<ClubBoard, Long> {

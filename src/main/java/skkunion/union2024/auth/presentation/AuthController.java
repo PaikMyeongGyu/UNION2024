@@ -1,17 +1,18 @@
 package skkunion.union2024.auth.presentation;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.dto.TokenResponse;
 import skkunion.union2024.auth.service.AuthService;
 import skkunion.union2024.global.annotation.AuthMember;
 import skkunion.union2024.member.dto.AuthMemberDto;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

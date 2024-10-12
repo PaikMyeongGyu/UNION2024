@@ -1,14 +1,22 @@
 package skkunion.union2024.like.domain;
 
-import jakarta.annotation.Nullable;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import skkunion.union2024.board.domain.ClubBoard;
-import skkunion.union2024.club.common.domain.ClubMember;
-
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
+import skkunion.union2024.board.domain.ClubBoard;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
@@ -25,7 +33,7 @@ public class BoardLike {
     @Column(name = "board_like_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(nullable = false, name = "club_board_id")
     private ClubBoard clubBoard;
 

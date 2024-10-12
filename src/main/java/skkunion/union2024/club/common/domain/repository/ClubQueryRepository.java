@@ -1,17 +1,18 @@
 package skkunion.union2024.club.common.domain.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import skkunion.union2024.club.common.domain.ClubAuthority;
 import skkunion.union2024.club.dto.response.ClubMemberDto;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor

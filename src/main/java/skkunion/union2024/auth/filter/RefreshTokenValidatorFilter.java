@@ -1,18 +1,23 @@
 package skkunion.union2024.auth.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import static java.lang.Boolean.TRUE;
+import static org.springframework.security.core.authority.AuthorityUtils.*;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.member.domain.MemberState.ACTIVE;
+
+import java.io.IOException;
+import java.util.List;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.domain.Authority;
 import skkunion.union2024.auth.domain.Session;
@@ -23,13 +28,10 @@ import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.io.IOException;
-import java.util.List;
-
-import static java.lang.Boolean.TRUE;
-import static org.springframework.security.core.authority.AuthorityUtils.*;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
-import static skkunion.union2024.member.domain.MemberState.ACTIVE;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class RefreshTokenValidatorFilter extends OncePerRequestFilter {

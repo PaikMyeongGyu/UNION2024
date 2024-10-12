@@ -1,8 +1,8 @@
 package skkunion.union2024.board.dto.response;
 
-import skkunion.union2024.board.dto.ClubBoardDto;
-
 import java.util.List;
+
+import skkunion.union2024.board.dto.ClubBoardDto;
 
 public record ClubBoardResponse(
         String slug,

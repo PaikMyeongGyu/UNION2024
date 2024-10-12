@@ -1,14 +1,15 @@
 package skkunion.union2024.auth.domain;
 
-import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import skkunion.union2024.auth.dto.TokenResponse;
+import static io.jsonwebtoken.lang.Strings.UTF_8;
 
 import javax.crypto.SecretKey;
 
-import static io.jsonwebtoken.lang.Strings.UTF_8;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import skkunion.union2024.auth.dto.TokenResponse;
+import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 
 /**
  * 생성 시점은 Authentication 과정에서 AccessToken과 RefreshToken을 필터에서 생성하는 시점임.

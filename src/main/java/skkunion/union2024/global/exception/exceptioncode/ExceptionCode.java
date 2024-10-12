@@ -1,10 +1,11 @@
 package skkunion.union2024.global.exception.exceptioncode;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import static org.springframework.http.HttpStatus.*;
+
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter

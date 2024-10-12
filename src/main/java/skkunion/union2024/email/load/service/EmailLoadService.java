@@ -1,11 +1,15 @@
 package skkunion.union2024.email.load.service;
 
-import jakarta.mail.*;
-import lombok.RequiredArgsConstructor;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

@@ -1,18 +1,21 @@
 package skkunion.union2024.auth.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import java.io.IOException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.util.TokenHandler;
 
-import java.io.IOException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.RequiredArgsConstructor;
 
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 
