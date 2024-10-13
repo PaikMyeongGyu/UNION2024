@@ -48,9 +48,8 @@ public class TempClubMember {
 
     @Test
     void 더미유저_삽입_1000() {
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 180001; i <= 210000; i++) {
             Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
-            System.out.println(i);
             memberRepository.save(member);
             memberService.activateMemberByEmail("tester" + i + "@example.com");
         }
@@ -70,8 +69,11 @@ public class TempClubMember {
 
     @Test
     void 더미게시글_생성_50000() {
-        for (int i = 1; i <= 50000; i++) {
-            clubBoardService.registerClubBoard("algoGood" + (i % 10 + 1), 6L, "테스트용 게시글입니다." + i, "테스트용 게시글입니다." + i);
+        for (int i = 1270001; i <= 1300000; i++) {
+            clubBoardService.registerClubBoard("algoGood" + (i % 10 + 1),
+                                          30L,
+                                               "테스트용 게시글입니다." + i,
+                                            "테스트용 게시글입니다." + i);
         }
     }
 

@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -27,6 +29,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "club_board", indexes = {
+        @Index(name = "idx_club_board_club_id_club_board_id", columnList = "club_id, club_board_id DESC"),
+})
 public class ClubBoard {
 
     @Getter
