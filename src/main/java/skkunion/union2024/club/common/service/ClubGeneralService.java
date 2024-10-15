@@ -5,6 +5,7 @@ import static java.lang.Boolean.TRUE;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static org.springframework.data.repository.util.ClassUtils.ifPresent;
+import static skkunion.union2024.club.dto.response.ClubMemberDto.COMP_AUTH_JOINED_AT_DESC;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import skkunion.union2024.auth.domain.Authority;
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubAuthority;
 import skkunion.union2024.club.common.domain.ClubMember;
@@ -44,12 +46,9 @@ public class ClubGeneralService {
 
     @Transactional
     public void joinClub(ClubJoinDto req) {
-        Club findClub = clubRepository.findClubBySlug(req.clubSlug())
-                .orElseThrow(() -> new ClubException(CLUB_NOT_FOUND));
-        clubMemberRepository.findByClubAndMember(findClub,req.member())
-                .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_ALREADY_EXIST); });
-        clubMemberRepository.findByClubAndNickName(findClub, req.nickName())
-                .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_DUPLICATED_NICKNAME); });
+        Club findClub = getClubBy(req);
+        isDuplicateJoining(req, findClub);
+        isDuplicateNickName(req, findClub);
 
         clubRepository.updateTotalMembersBySlug(req.clubSlug());
 
@@ -60,16 +59,20 @@ public class ClubGeneralService {
     @Transactional(readOnly = true)
     public ClubMemberResponse findMemberBySlug(String slug, Long memberId) {
         Club findClub = IsMemberInClub(slug, memberId);
-
-        return generateClubMemberResponse(clubQueryRepository.getMembersWithoutId(slug), findClub);
+        return generateClubMemberResponse(clubQueryRepository.getClubMembers(slug), findClub);
     }
 
 
     @Transactional(readOnly = true)
-    public ClubMemberResponse findMemberBySlugAndId(String slug, Long memberId, Long clubMemberId) {
-        Club findClub = IsMemberInClub(slug, memberId);
+    public ClubMemberResponse findMemberBySlugAndAuthorityAndId(
+            Long memberId,
+            String slug,
+            ClubAuthority authority,
+            Long clubMemberId) {
 
-        return generateClubMemberResponse(clubQueryRepository.getMembersWithId(slug, clubMemberId), findClub);
+        Club findClub = IsMemberInClub(slug, memberId);
+        List<ClubMemberDto> clubMembers = clubQueryRepository.getClubMembers(slug, authority, clubMemberId);
+        return generateClubMemberResponse(clubMembers, findClub);
     }
 
     private Club IsMemberInClub(String slug, Long memberId) {
@@ -85,21 +88,36 @@ public class ClubGeneralService {
 
     private ClubMemberResponse generateClubMemberResponse(List<ClubMemberDto> findClubMembersWithSlug, Club findClub) {
         Boolean hasNext = findClubMembersWithSlug.size() > PAGE_SIZE ? TRUE : FALSE;
+        ClubAuthority authority = hasNext ? findClubMembersWithSlug.get(findClubMembersWithSlug.size() - 2).authority() : null;
         Long nextId = hasNext ? findClubMembersWithSlug.get(findClubMembersWithSlug.size() - 2).id() : null;
-
-        Collections.sort(findClubMembersWithSlug, comparing(ClubMemberDto::authority).
-                                                  thenComparing(ClubMemberDto::id)); // President, Manager, General 순
-        findClubMembersWithSlug.remove(findClubMembersWithSlug.size() - 1);
+        var result = findClubMembersWithSlug.stream().limit(PAGE_SIZE).toList();
 
         Map<ClubAuthority, List<ClubMemberSelectDto>> clubMembers
-                = findClubMembersWithSlug.stream()
+                = result.stream()
                                          .map(ClubMemberDto::convertToClubMemberDto)
                                          .collect(groupingBy(ClubMemberSelectDto::authority));
 
         return new ClubMemberResponse(findClub.getClubName(),
+                                      authority,
+                                      nextId,
                                       findClub.getTotalMembers(),
                                       hasNext,
-                                      nextId,
                                       clubMembers);
     }
+
+    private void isDuplicateNickName(ClubJoinDto req, Club findClub) {
+        clubMemberRepository.findByClubAndNickName(findClub, req.nickName())
+                .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_DUPLICATED_NICKNAME); });
+    }
+
+    private void isDuplicateJoining(ClubJoinDto req, Club findClub) {
+        clubMemberRepository.findByClubAndMember(findClub, req.member())
+                .ifPresent(club -> { throw new ClubException(CLUB_MEMBER_ALREADY_EXIST); });
+    }
+
+    private Club getClubBy(ClubJoinDto req) {
+        return clubRepository.findClubBySlug(req.clubSlug())
+                .orElseThrow(() -> new ClubException(CLUB_NOT_FOUND));
+    }
+
 }

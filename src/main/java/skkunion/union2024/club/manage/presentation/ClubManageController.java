@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import skkunion.union2024.club.common.domain.ClubAuthority;
 import skkunion.union2024.club.common.service.ClubGeneralService;
 import skkunion.union2024.club.dto.request.CreateClubRequest;
 import skkunion.union2024.club.dto.response.ClubMemberResponse;
@@ -42,15 +43,21 @@ public class ClubManageController {
 
     @GetMapping("/clubs/members")
     public ResponseEntity<ClubMemberResponse> showMembersInClub(
-        @RequestParam String clubSlug,
-        @RequestParam(required = false) Long clubMemberId,
+        @RequestParam String slug,
+        @RequestParam(required = false) ClubAuthority authority,
+        @RequestParam(required = false) Long nextId,
         @AuthMember AuthMemberDto authMember
     ) {
-        if (clubMemberId == null) {
-            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(clubSlug, authMember.memberId()));
+        if (nextId == null) {
+            return ResponseEntity.ok(clubGeneralService.findMemberBySlug(slug, authMember.memberId()));
         }
 
-        return ResponseEntity.ok(clubGeneralService.findMemberBySlugAndId(clubSlug, authMember.memberId(), clubMemberId));
+        return ResponseEntity
+                .ok(clubGeneralService.findMemberBySlugAndAuthorityAndId(
+                        authMember.memberId(),
+                        slug,
+                        authority,
+                        nextId));
     }
 
 }

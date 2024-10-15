@@ -5,8 +5,7 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
-import static skkunion.union2024.club.common.domain.ClubAuthority.GENERAL;
-import static skkunion.union2024.club.common.domain.ClubAuthority.PRESIDENT;
+import static skkunion.union2024.club.common.domain.ClubAuthority.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "club_member", indexes = {
         @Index(name = "idx_club_member", columnList = "slug, member_id"),
-        @Index(name = "idx_club_authority", columnList = "slug, club_authority, club_member_id"),
+        @Index(name = "idx_club_authority", columnList = "slug, club_authority, club_member_id desc"),
         @Index(name = "idx_club_nick_name", columnList = "nick_name")
 })
 public class ClubMember implements Comparable<ClubMember> {
@@ -82,6 +81,10 @@ public class ClubMember implements Comparable<ClubMember> {
 
     public static ClubMember President(Club club, Member member, String nickName) {
         return new ClubMember(club, member, nickName, PRESIDENT);
+    }
+
+    public static ClubMember Manager(Club club, Member member, String nickName) {
+        return new ClubMember(club, member, nickName, VICE_PRESIDENT);
     }
 
     public static ClubMember General(Club club, Member member, String nickName) {

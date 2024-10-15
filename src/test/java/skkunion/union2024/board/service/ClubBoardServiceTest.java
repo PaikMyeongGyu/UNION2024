@@ -33,10 +33,10 @@ class ClubBoardServiceTest {
     @Autowired
     private EntityManager em;
 
-    @Test
-    void 클럽_게시글_작성() {
-
-
-    }
+//    @Test
+//    void 클럽_게시글_작성() {
+//
+//
+//    }
 
 }
