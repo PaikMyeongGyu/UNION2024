@@ -1,9 +1,14 @@
 package skkunion.union2024.board.service;
 
-import lombok.RequiredArgsConstructor;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.global.util.PageParameterUtils.*;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.board.domain.ClubBoard;
 import skkunion.union2024.board.domain.repository.ClubBoardQueryRepository;
 import skkunion.union2024.board.domain.repository.ClubBoardRepository;
@@ -13,20 +18,13 @@ import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.common.domain.repository.ClubMemberRepository;
 import skkunion.union2024.club.common.domain.repository.ClubRepository;
-import skkunion.union2024.club.dto.response.ClubMemberDto;
 import skkunion.union2024.global.exception.ClubBoardException;
-import skkunion.union2024.global.util.PageParameterUtils;
 import skkunion.union2024.like.domain.BoardLike;
 import skkunion.union2024.like.domain.repository.LikeRepository;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static java.lang.Math.max;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
-import static skkunion.union2024.global.util.PageParameterUtils.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -38,14 +36,19 @@ public class ClubBoardService {
     private final MemberRepository memberRepository;
     private final ClubBoardQueryRepository clubBoardQueryRepository;
 
-
     @Transactional
     public void registerClubBoard(String slug, Long memberId, String title, String content) {
         Club findClub = getClubBySlug(slug);
         Member findMember = getMemberById(memberId);
         ClubMember findClubMember = getClubMemberWithClubAndMember(findClub, findMember);
 
-        var clubBoard = ClubBoard.of(title, content, findClub, findClubMember, findMember.getEmail(), findClubMember.getNickName());
+        var clubBoard = ClubBoard.builder()
+                                 .title(title)
+                                 .content(content)
+                                 .club(findClub)
+                                 .clubMember(findClubMember)
+                                 .memberEmail(findMember.getEmail())
+                                 .nickname(findClubMember.getNickName()).build();
         clubBoardRepository.save(clubBoard);
     }
 
@@ -79,7 +82,6 @@ public class ClubBoardService {
             clubBoardDtos.remove(size);
             nextCursorId = getLongCursor(clubBoardDtos, ClubBoardDto::getId);
         }
-
         return new ClubBoardResponse(slug, size, hasNext, nextCursorId, clubBoardDtos);
     }
 

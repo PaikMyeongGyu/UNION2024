@@ -1,8 +1,10 @@
 package skkunion.union2024.global.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
+
 import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
+
+import lombok.Getter;
 
 @Getter
 public class ClubException extends RuntimeException {

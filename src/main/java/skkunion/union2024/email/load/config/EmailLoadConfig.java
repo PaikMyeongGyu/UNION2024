@@ -1,7 +1,9 @@
 package skkunion.union2024.email.load.config;
 
-import jakarta.mail.*;
-import java.util.*;
+import java.util.Properties;
+
+import jakarta.mail.Session;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

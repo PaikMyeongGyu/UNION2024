@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
  * @param email @Email(message = "이메일 형식에 적합하지 않습니다.")
  */
 public record ResendEmailVerificationRequest(
-        // @Email(message = "이메일 형식에 적합하지 않습니다.")
         @NotBlank(message = "이메일은 공백일 수 없습니다.")
         String email,
         @NotBlank(message = "패스워드는 공백일 수 없습니다.")

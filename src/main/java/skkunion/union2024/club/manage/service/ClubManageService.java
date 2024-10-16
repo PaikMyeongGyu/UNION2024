@@ -1,8 +1,10 @@
 package skkunion.union2024.club.manage.service;
 
-import lombok.RequiredArgsConstructor;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.common.domain.repository.ClubRepository;
@@ -10,7 +12,7 @@ import skkunion.union2024.club.common.domain.repository.ClubMemberRepository;
 import skkunion.union2024.club.manage.service.servicedto.CreateClubDto;
 import skkunion.union2024.global.exception.ClubException;
 
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

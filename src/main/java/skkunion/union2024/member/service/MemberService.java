@@ -1,15 +1,17 @@
 package skkunion.union2024.member.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.global.exception.EmailVerificationException;
 import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -36,23 +38,27 @@ public class MemberService {
         memberRepository.deleteCompleteById(findMember.getId());
     }
 
+    @Transactional
+    public void activateMemberByEmail(String email) {
+        memberRepository.activateMemberByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Member> findMemberByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Member> findMemberById(Long memberId) {
         return memberRepository.findById(memberId);
     }
 
-    public boolean IsPasswordMatch(Member member, String password) {
-        return passwordEncoder.matches(password, member.getPassword());
-    }
-
+    @Transactional(readOnly = true)
     public boolean isMemberExistWithEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
     }
 
-    public void activateMemberByEmail(String email) {
-        memberRepository.activateMemberByEmail(email);
+    public boolean IsPasswordMatch(Member member, String password) {
+        return passwordEncoder.matches(password, member.getPassword());
     }
 }

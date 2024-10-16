@@ -3,14 +3,20 @@ package skkunion.union2024.inputdata;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import skkunion.union2024.board.domain.ClubBoard;
+import skkunion.union2024.board.domain.repository.ClubBoardRepository;
+import skkunion.union2024.board.service.ClubBoardService;
 import skkunion.union2024.club.common.domain.Club;
 import skkunion.union2024.club.common.domain.ClubMember;
 import skkunion.union2024.club.common.domain.repository.ClubMemberRepository;
 import skkunion.union2024.club.common.domain.repository.ClubRepository;
 import skkunion.union2024.club.manage.service.ClubManageService;
+import skkunion.union2024.like.domain.BoardLike;
+import skkunion.union2024.like.domain.repository.LikeRepository;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 import skkunion.union2024.club.manage.service.servicedto.CreateClubDto;
+import skkunion.union2024.member.service.MemberService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TempClubMember {
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     ClubRepository clubRepository;
@@ -28,140 +37,76 @@ public class TempClubMember {
     @Autowired
     ClubManageService clubManageService;
 
-//    @Test
-//    void 더미데이터_삽입_100000() {
-//        for (int i = 101; i <= 100000; i++) {
-//            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
-//            memberRepository.save(member);
-//        }
-//    }
-//
-//    @Test
-//    void 더미데이터_삽입_100000_이후() {
-//        for (int i = 480001; i <= 500000; i++) {
-//            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
-//            memberRepository.save(member);
-//        }
-//    }
+    @Autowired
+    ClubBoardService clubBoardService;
 
+    @Autowired
+    ClubBoardRepository clubBoardRepository;
 
-//    @Test
-//    void 더미클럽_가입_100000() {
-//        for (int i = 50001; i <= 100000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("algoGood").get();
-//
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_생성_100() {
-//        Member findMember = memberRepository.findByEmail("test1@gmail.com").get();
-//        for (int i = 1; i <= 100; i++) {
-//            clubManageService.createClub(new CreateClubDto("club" + i, "club" + i, "레프리", "no", findMember));
-//        }
-//    }
+    @Autowired
+    LikeRepository likeRepository;
 
-//    private int index = 30;
-//    @Test
-//    void 더미클럽_가입_00000() {
-//        Club findClub = clubRepository.findClubBySlug("algoGood").get();
-//        for (int i = 480001; i <= 500000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
+    @Test
+    void 더미유저_삽입_1000() {
+        for (int i = 990001; i <= 1020000; i++) {
+            Member member = new Member("tester" + i, "tester" + i + "@example.com", "123456789");
+            memberRepository.save(member);
+            memberService.activateMemberByEmail("tester" + i + "@example.com");
+        }
+    }
+
+    @Test
+    void 더미클럽_생성_10() {
+        for (int i = 11; i <= 100; i++) {
+            Club club = Club.of("algoGood" + i, "알고리즘" + i, "레프리" + i, "알고리즘을 위한 동아리입니다.");
+            clubRepository.save(club);
+
+            Member president = memberRepository.findById(6L).get();
+            ClubMember clubPresident = ClubMember.President(club, president, "레프리" + i);
+            clubMemberRepository.save(clubPresident);
+        }
+    }
+
+    @Test
+    void 더미게시글_생성_50000() {
+        for (int i = 1270001; i <= 1300000; i++) {
+            clubBoardService.registerClubBoard("algoGood" + (i % 10 + 1),
+                                          30L,
+                                               "테스트용 게시글입니다." + i,
+                                            "테스트용 게시글입니다." + i);
+        }
+    }
+
+    @Test
+    void 더미클럽_10_가입_1000() {
+        for (int i = 30000; i <= 30030; i++) {
+            Member member = memberRepository.findByEmail("tester" + i + "@example.com").get();
+            for (int j = 80; j <= 80; j++) {
+                Club club = clubRepository.findClubBySlug("algoGood" + j).get();
+                ClubMember manager = ClubMember.Manager(club, member, "tester" + i);
+                clubMemberRepository.save(manager);
+//                ClubMember general = ClubMember.General(club, member, "tester" + i);
+//                clubMemberRepository.save(general);
+//                if (j % 50 == 0) {
+//                    ClubMember manager = ClubMember.Manager(club, member, "tester" + i);
+//                    clubMemberRepository.save(manager);
+//                } else {
 //
-//    @Test
-//    void 더미클럽_가입_10000() {
-//        for (int i = 1001; i <= 2000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_20000() {
-//        for (int i = 2001; i <= 3000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_30000() {
-//        for (int i = 3001; i <= 4000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_40000() {
-//        for (int i = 4001; i <= 5000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_50000() {
-//        for (int i = 5001; i <= 6000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_60000() {
-//        for (int i = 6001; i <= 7000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_70000() {
-//        for (int i = 7001; i <= 8000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_80000() {
-//        for (int i = 8001; i <= 9000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
-//
-//    @Test
-//    void 더미클럽_가입_90000() {
-//        for (int i = 9001; i <= 10000; i++) {
-//            Member findMember = memberRepository.findByEmail("tester" + i + "@example.com").get();
-//            Club findClub = clubRepository.findClubBySlug("club" + index).get();
-//            ClubMember general = ClubMember.General(findClub, findMember, "tester" + i);
-//            clubMemberRepository.save(general);
-//        }
-//    }
+//                }
+            }
+        }
+    }
+
+    @Test
+    void 더미게시글_좋아요_10_1000() {
+        for (long i = 1L; i <= 50L; i++) {
+            ClubBoard clubBoard = clubBoardRepository.findById(i).get();
+            for (int j = 1; j <= 1000; j++) {
+                Club club = clubBoard.getClub();
+                ClubMember clubMember = clubMemberRepository.findByClubAndNickName(club,"tester" + j).get();
+                likeRepository.save(BoardLike.of(clubBoard, clubMember.getId()));
+                clubBoardRepository.increaseLikes(clubBoard.getId());
+            }
+        }
+    }
 }

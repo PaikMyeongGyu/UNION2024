@@ -1,30 +1,45 @@
 package skkunion.union2024.board.domain;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import skkunion.union2024.club.common.domain.Club;
-import skkunion.union2024.club.common.domain.ClubMember;
-
-import java.time.LocalDateTime;
-
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import skkunion.union2024.club.common.domain.Club;
+import skkunion.union2024.club.common.domain.ClubMember;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "club_board", indexes = {
+        @Index(name = "idx_club_board_club_id_club_board_id", columnList = "club_id, club_board_id DESC"),
+})
 public class ClubBoard {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
     @Getter
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "club_board_id")
     private Long id;
 
+    @Getter
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "club_id")
     private Club club;
@@ -53,6 +68,7 @@ public class ClubBoard {
     @Column(updatable = false)
     private LocalDateTime joinedAt;
 
+    @Builder
     public ClubBoard(String title, String content, Club club, ClubMember clubMember, String memberEmail, String nickname) {
         this.title = title;
         this.content = content;
@@ -61,9 +77,5 @@ public class ClubBoard {
         this.memberEmail = memberEmail;
         this.nickname = nickname;
         this.likes = 0L;
-    }
-
-    public static ClubBoard of(String title,String content, Club club, ClubMember clubMember, String memberEmail, String writerName) {
-        return new ClubBoard(title, content, club, clubMember, memberEmail, writerName);
     }
 }

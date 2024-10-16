@@ -1,6 +1,11 @@
 package skkunion.union2024.auth;
 
-import lombok.RequiredArgsConstructor;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import static skkunion.union2024.member.domain.MemberState.ACTIVE;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,18 +15,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import skkunion.union2024.auth.domain.Authority;
 import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.global.exception.AuthException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
-import static skkunion.union2024.member.domain.MemberState.ACTIVE;
-
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -34,17 +35,12 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
-        String password = authentication.getCredentials().toString();
-        Member member = memberRepository.findByEmail(email)
-                                    .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+        String email = getEmailFrom(authentication);
+        String password = getPasswordFrom(authentication);
+        Member member = getMemberBy(email);
+        memberValidation(member, password);
 
-        if (member.getStatus() != ACTIVE)
-            throw new AuthException(ACCOUNT_NOT_ACTIVE);
-        if (!passwordEncoder.matches(password, member.getPassword()))
-            throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
-
-        List<Authority> findAuthorities = authorityRepository.findAllByMemberId(member.getId());
+        List<Authority> findAuthorities = getAuthoritiesByMemberId(member.getId());
         return new UsernamePasswordAuthenticationToken(email, password, getGrantedAuthorities(findAuthorities));
     }
 
@@ -59,5 +55,29 @@ public class UnionAuthenticationProvider implements AuthenticationProvider {
             grantedAuthorities.add(new SimpleGrantedAuthority(authority.getRole()));
 
         return grantedAuthorities;
+    }
+
+    private void memberValidation(Member member, String password) {
+        if (member.getStatus() != ACTIVE)
+            throw new AuthException(ACCOUNT_NOT_ACTIVE);
+        if (!passwordEncoder.matches(password, member.getPassword()))
+            throw new UsernameNotFoundException(ACCOUNT_NOT_FOUND.getMessage());
+    }
+
+    private static String getEmailFrom(Authentication authentication) {
+        return authentication.getName();
+    }
+
+    private static String getPasswordFrom(Authentication authentication) {
+        return authentication.getCredentials().toString();
+    }
+
+    private Member getMemberBy(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException(ACCOUNT_NOT_FOUND));
+    }
+
+    private List<Authority> getAuthoritiesByMemberId(Long memberId) {
+        return authorityRepository.findAllByMemberId(memberId);
     }
 }

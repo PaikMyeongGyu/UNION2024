@@ -1,11 +1,13 @@
 package skkunion.union2024.auth.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.auth.domain.Session;
 import skkunion.union2024.auth.domain.repository.SessionRepository;
 import skkunion.union2024.auth.util.TokenHandler;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

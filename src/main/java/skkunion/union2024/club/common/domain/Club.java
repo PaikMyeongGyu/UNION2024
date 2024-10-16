@@ -1,19 +1,28 @@
 package skkunion.union2024.club.common.domain;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import skkunion.union2024.board.domain.ClubBoard;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
+import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.FetchType.LAZY;
-import static lombok.AccessLevel.PROTECTED;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import skkunion.union2024.board.domain.ClubBoard;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
@@ -28,7 +37,7 @@ public class Club {
     private String slug;
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
-    private List<ClubMember> memberClubs = new ArrayList<>();
+    private List<ClubMember> clubMembers = new ArrayList<>();
 
     @OneToMany(mappedBy = "club", cascade = PERSIST, fetch = LAZY)
     private List<ClubBoard> clubBoards = new ArrayList<>();

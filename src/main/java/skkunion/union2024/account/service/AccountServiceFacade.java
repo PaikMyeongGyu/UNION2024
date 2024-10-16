@@ -1,18 +1,20 @@
 package skkunion.union2024.account.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static java.time.LocalDateTime.*;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static skkunion.union2024.email.verification.service.EmailVerificationService.TOKEN_LENGTH;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import skkunion.union2024.email.verification.service.EmailVerificationService;
 import skkunion.union2024.global.exception.EmailVerificationException;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.service.MemberService;
 
-import static java.time.LocalDateTime.*;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static skkunion.union2024.email.verification.service.EmailVerificationService.TOKEN_LENGTH;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service

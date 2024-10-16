@@ -1,12 +1,18 @@
 package skkunion.union2024.auth.domain;
 
-import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static skkunion.union2024.auth.domain.AuthState.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static skkunion.union2024.auth.domain.AuthState.*;
 
 @Entity
 @Getter

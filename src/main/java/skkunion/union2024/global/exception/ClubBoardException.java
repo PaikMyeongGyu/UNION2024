@@ -1,6 +1,7 @@
 package skkunion.union2024.global.exception;
 
 import org.springframework.http.HttpStatus;
+
 import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 
 public class ClubBoardException extends RuntimeException {

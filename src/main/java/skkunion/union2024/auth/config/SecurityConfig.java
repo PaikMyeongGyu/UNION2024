@@ -1,5 +1,7 @@
 package skkunion.union2024.auth.config;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.domain.repository.AuthorityRepository;
 import skkunion.union2024.auth.domain.repository.SessionRepository;
@@ -16,8 +19,6 @@ import skkunion.union2024.auth.filter.AuthTokenGenerateFilter;
 import skkunion.union2024.auth.filter.RefreshTokenValidatorFilter;
 import skkunion.union2024.auth.util.TokenHandler;
 import skkunion.union2024.member.domain.repository.MemberRepository;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 public class SecurityConfig {

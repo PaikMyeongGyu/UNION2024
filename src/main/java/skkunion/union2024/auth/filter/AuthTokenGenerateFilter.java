@@ -1,27 +1,29 @@
 package skkunion.union2024.auth.filter;
 
-import io.jsonwebtoken.Jwts;
+import static skkunion.union2024.auth.domain.AuthTokenContext.ACCESS_TOKEN_EXPIRATION_TIME;
+import static skkunion.union2024.auth.domain.AuthTokenContext.REFRESH_TOKEN_EXPIRATION_TIME;
+import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
+
+import java.io.IOException;
+import java.util.Date;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import skkunion.union2024.auth.domain.AuthTokenContext;
 import skkunion.union2024.auth.util.TokenHandler;
 import skkunion.union2024.global.exception.AuthException;
-import skkunion.union2024.global.exception.exceptioncode.ExceptionCode;
 import skkunion.union2024.member.domain.Member;
 import skkunion.union2024.member.domain.repository.MemberRepository;
 
-import java.io.IOException;
-import java.util.*;
-
-import static skkunion.union2024.auth.domain.AuthTokenContext.ACCESS_TOKEN_EXPIRATION_TIME;
-import static skkunion.union2024.auth.domain.AuthTokenContext.REFRESH_TOKEN_EXPIRATION_TIME;
-import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
+import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AuthTokenGenerateFilter extends OncePerRequestFilter {
