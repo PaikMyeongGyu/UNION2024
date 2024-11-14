@@ -18,6 +18,7 @@ public class AuthenticationConfig {
         authMatchers.add("/clubs/*");
         authMatchers.add("/clubs/members");
         authMatchers.add("/boards");
+        authMatchers.add("/tboards");
         authMatchers.add("/boards/like");
     }
 }

@@ -22,7 +22,7 @@ public class EmailVerification {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 40)
+    @Column(nullable = false, length = 40, unique = true)
     private String email;
 
     @Column(nullable = false, length = 10)

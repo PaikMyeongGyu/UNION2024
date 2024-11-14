@@ -28,7 +28,7 @@ public class AccountController {
     /**
      * 편리성을 위해 임시로 만든 코드로 제거해줘야 합니다.
      */
-    private final AccountServiceTempFacade accountServiceTempFacade;
+//    private final AccountServiceTempFacade accountServiceTempFacade;
 
     @PostMapping("/accounts")
     public ResponseEntity<CreateAccountResponse> createAccount(
@@ -39,7 +39,7 @@ public class AccountController {
         String password = accountRequest.password();
 
         // 편의성을 위해 임시로 만든 코드로 Temp가 아닌 다른 코드로 변경해주어야 합니다.
-        accountServiceTempFacade.createAccountWithEmailVerification(nickname, email, password);
+        accountServiceFacade.createAccountWithEmailVerification(nickname, email, password);
         return ResponseEntity.status(CREATED).body(new CreateAccountResponse(nickname, email));
     }
 
@@ -49,14 +49,13 @@ public class AccountController {
     ) {
         String email = resendRequest.email();
         String password = resendRequest.password();
-
         accountServiceFacade.resendEmailVerification(email, password);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @GetMapping("/accounts/{verificationToken}")
     public ResponseEntity<Void> verifyAccount(
-            @PathVariable final String verificationToken
+            @PathVariable("verificationToken") final String verificationToken
     ) {
         accountServiceFacade.tryEmailVerification(verificationToken);
         return ResponseEntity.noContent().build();

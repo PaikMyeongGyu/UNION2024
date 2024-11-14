@@ -58,6 +58,11 @@ public class MemberService {
         return memberRepository.existsMemberByEmail(email);
     }
 
+    @Transactional(readOnly = true)
+    public boolean isMemberExistWithNickname(String nickname) {
+        return memberRepository.existsMemberByNickname(nickname);
+    }
+
     public boolean IsPasswordMatch(Member member, String password) {
         return passwordEncoder.matches(password, member.getPassword());
     }
