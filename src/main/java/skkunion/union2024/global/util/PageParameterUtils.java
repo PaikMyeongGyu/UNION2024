@@ -8,6 +8,7 @@ import java.util.function.Function;
 public class PageParameterUtils<T, R> {
 
     public static Integer PAGE_SIZE = 15;
+    public static Integer SCHEDULE_PAGE_SIZE = 50;
 
     public static <T> boolean hasNext(List<T> pageObject) {
         return pageObject.size() > PAGE_SIZE;
