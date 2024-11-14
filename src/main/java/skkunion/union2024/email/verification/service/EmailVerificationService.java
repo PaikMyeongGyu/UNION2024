@@ -4,15 +4,11 @@ import static jakarta.mail.Message.RecipientType.TO;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.SendFailedException;
 import jakarta.mail.internet.MimeMessage;
 
-import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,6 +32,7 @@ public class EmailVerificationService {
     private String EMAIL_ID;
 
     private final EmailVerificationRepository emailVerificationRepository;
+    private final EmailSendRecordService emailSendRecordService;
     private final MemberService memberService;
     private final JavaMailSender mailSender;
 
@@ -58,6 +55,7 @@ public class EmailVerificationService {
     public void deleteEmailAuth(String email) {
         if (isAlreadyExists(email)) {
             emailVerificationRepository.deleteByEmail(email);
+            emailSendRecordService.deleteRecordByEmail(email);
             return;
         }
         throw new AuthException(ACCOUNT_NOT_FOUND);
@@ -68,7 +66,9 @@ public class EmailVerificationService {
         try {
             sendEmailVerificationMessage(email, token);
         } catch (Exception e) {
-            // 메일 오류 관련 처리를 추가해야 할 것 같음.
+            log.error("{}: 이메일 요청 실패", email);
+        } finally {
+            emailSendRecordService.recordSaveOrIncreaseCount(email);
         }
     }
 
@@ -96,7 +96,7 @@ public class EmailVerificationService {
     }
 
     private void blockInvalidEmailByMemberId(Long memberId) {
-        memberService.completeDelete(memberId);
+        memberService.completeDeleteById(memberId);
     }
 
     private String generateMessage(String token) {

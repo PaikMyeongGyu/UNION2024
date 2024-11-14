@@ -41,4 +41,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         WHERE member.id = :memberId
         """)
     void deleteCompleteById(@Param("memberId") final Long memberId);
+
+    @Modifying
+    @Query("""
+        DELETE from Member member
+        WHERE member.email = :email
+        """)
+    void deleteCompleteByEmail(@Param("email") final String email);
 }

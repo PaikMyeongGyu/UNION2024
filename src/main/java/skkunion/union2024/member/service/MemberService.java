@@ -26,12 +26,17 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMemberById(Long memberId) {
+    public void softDeleteMemberById(Long memberId) {
         memberRepository.deleteSoftById(memberId);
     }
 
     @Transactional
-    public void completeDelete(Long memberId) {
+    public void completeDeleteByEmail(String email) {
+        memberRepository.deleteCompleteByEmail(email);
+    }
+
+    @Transactional
+    public void completeDeleteById(Long memberId) {
         Member findMember = findMemberById(memberId).orElseThrow(()
                 -> new EmailVerificationException(ExceptionCode.ACCOUNT_NOT_FOUND));
 

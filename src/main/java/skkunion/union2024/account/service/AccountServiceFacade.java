@@ -42,7 +42,7 @@ public class AccountServiceFacade {
         // 멤버 삭제 규칙 --> 한번 요청하고 패스워드 작성하게 할 것.
         if (!memberService.IsPasswordMatch(findMember,password))
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
-        memberService.deleteMemberById(findMember.getId());
+        memberService.softDeleteMemberById(findMember.getId());
     }
 
     @Transactional
