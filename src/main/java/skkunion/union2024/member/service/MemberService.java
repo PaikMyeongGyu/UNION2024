@@ -26,12 +26,17 @@ public class MemberService {
     }
 
     @Transactional
-    public void deleteMemberById(Long memberId) {
+    public void softDeleteMemberById(Long memberId) {
         memberRepository.deleteSoftById(memberId);
     }
 
     @Transactional
-    public void completeDelete(Long memberId) {
+    public void completeDeleteByEmail(String email) {
+        memberRepository.deleteCompleteByEmail(email);
+    }
+
+    @Transactional
+    public void completeDeleteById(Long memberId) {
         Member findMember = findMemberById(memberId).orElseThrow(()
                 -> new EmailVerificationException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
@@ -56,6 +61,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     public boolean isMemberExistWithEmail(String email) {
         return memberRepository.existsMemberByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isMemberExistWithNickname(String nickname) {
+        return memberRepository.existsMemberByNickname(nickname);
     }
 
     public boolean IsPasswordMatch(Member member, String password) {

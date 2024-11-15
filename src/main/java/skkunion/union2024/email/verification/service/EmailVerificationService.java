@@ -4,15 +4,11 @@ import static jakarta.mail.Message.RecipientType.TO;
 import static skkunion.union2024.global.exception.exceptioncode.ExceptionCode.ACCOUNT_NOT_FOUND;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.SendFailedException;
 import jakarta.mail.internet.MimeMessage;
 
-import org.eclipse.angus.mail.util.MailConnectException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,6 +32,7 @@ public class EmailVerificationService {
     private String EMAIL_ID;
 
     private final EmailVerificationRepository emailVerificationRepository;
+    private final EmailSendRecordService emailSendRecordService;
     private final MemberService memberService;
     private final JavaMailSender mailSender;
 
@@ -43,63 +40,35 @@ public class EmailVerificationService {
     public static final int TOKEN_LENGTH = 10;
 
     @Transactional
-    public void createTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
+    public void createTemporaryEmailAuth(String email, String token) {
+        LocalDateTime expiredTime = LocalDateTime.now().plusMinutes(EXPIRED_MINUTE);
         createNewTemporaryEmailVerification(email, token, expiredTime);
     }
 
     @Transactional
-    public void createTemporaryEmailAuth(String email, String token) {
-        LocalDateTime expiredTime = LocalDateTime.now().plusMinutes(EXPIRED_MINUTE);
-        createTemporaryEmailVerification(email, token, expiredTime);
-    }
-
-    @Transactional
     public void refreshTemporaryEmailVerification(String email, String token) {
-        refreshTemporaryEmailVerification(email, token, LocalDateTime.now().plusMinutes(EXPIRED_MINUTE));
-    }
-
-    public void refreshTemporaryEmailVerification(String email, String token, LocalDateTime expiredTime) {
-        emailVerificationRepository.refreshEmailVerificationToken(email, token, expiredTime);
+        emailVerificationRepository
+                .refreshEmailVerificationToken(email, token, LocalDateTime.now().plusMinutes(EXPIRED_MINUTE));
     }
 
     @Transactional
     public void deleteEmailAuth(String email) {
         if (isAlreadyExists(email)) {
             emailVerificationRepository.deleteByEmail(email);
+            emailSendRecordService.deleteRecordByEmail(email);
             return;
         }
-
         throw new AuthException(ACCOUNT_NOT_FOUND);
     }
 
     @Async("emailExecutor")
-    public void sendEmailVerificationMessageWithRetry(int cnt, Long memberId, String email, String token) {
-        if (cnt == 0) {
-            log.error("This email({}) Verification is Failed", email);
-            return;
-        }
-
+    public void sendEmailVerification(String email, String token) {
         try {
             sendEmailVerificationMessage(email, token);
-        } catch(MailSendException e) {
-            Map<Object, Exception> failedMessages = e.getFailedMessages();
-            for (Map.Entry<Object, Exception> entry : failedMessages.entrySet()) {
-                Exception cause = entry.getValue();
-                if (cause instanceof MailConnectException) { // 포트 문제 timeout 문제 처리
-                    sendEmailVerificationMessageWithRetry(cnt-1, memberId, email, token);
-                    log.error("retry: cnt={}", cnt);
-                } else if (cause instanceof MessagingException) {
-                    // 이상한 메일을 쓰면 여기로 들어옴.
-                    // 대신 반송을 했을 때, 문제를 체크할 방법은 없음. --> 스케줄링을 통해 해결
-                    SendFailedException sfe = (SendFailedException) cause;
-                    if (sfe.getMessage().equals("Invalid Addresses")) {
-                        blockInvalidEmailByMemberId(memberId);
-                    }
-                    log.error("SMTP Error Code: {}", sfe.getMessage());
-                }
-            }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("{}: 이메일 요청 실패", email);
+        } finally {
+            emailSendRecordService.recordSaveOrIncreaseCount(email);
         }
     }
 
@@ -127,7 +96,7 @@ public class EmailVerificationService {
     }
 
     private void blockInvalidEmailByMemberId(Long memberId) {
-        memberService.completeDelete(memberId);
+        memberService.completeDeleteById(memberId);
     }
 
     private String generateMessage(String token) {

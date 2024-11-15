@@ -21,7 +21,6 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
 
     void deleteByToken(String token);
 
-
     @Modifying
     @Query("""
             UPDATE EmailVerification emailVerification

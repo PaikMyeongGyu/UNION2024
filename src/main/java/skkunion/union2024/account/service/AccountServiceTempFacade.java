@@ -47,7 +47,7 @@ public class AccountServiceTempFacade {
         if (!memberService.IsPasswordMatch(findMember,password))
             throw new EmailVerificationException(ACCOUNT_INFO_DOES_NOT_MATCH);
 
-        memberService.deleteMemberById(findMember.getId());
+        memberService.softDeleteMemberById(findMember.getId());
     }
 
     public void resendEmailVerification(String email, String password) {

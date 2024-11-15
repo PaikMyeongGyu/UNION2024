@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
+@SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE member_id = ?")
 public class Member {
 
     @Id
